@@ -1,0 +1,2523 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sistema Hidroven - Gestión de Cobranzas</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+    <style>
+        /* ========== ESTILOS COMPLETOS ========== */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        :root {
+            --azul-oscuro: #003876;
+            --azul-medio: #2E79BA;
+            --azul-claro: #7F9CD6;
+            --success-color: #28a745;
+            --warning-color: #ffc107;
+            --danger-color: #dc3545;
+            --sidebar-width: 250px;
+            --sidebar-collapsed: 70px;
+            --header-height: 70px;
+            --bg-body: #f5f7fa;
+            --bg-card: white;
+            --text-primary: #343a40;
+            --text-secondary: #666;
+            --border-color: #eaeaea;
+            --shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+            --sidebar-bg: white;
+            --stat-label-color: #000000;
+        }
+
+        body.dark-mode {
+            --azul-oscuro: #1e5a8a;
+            --azul-medio: #4a9bdc;
+            --azul-claro: #8faae0;
+            --bg-body: #121212;
+            --bg-card: #252525;
+            --text-primary: #e0e0e0;
+            --text-secondary: #b0b0b0;
+            --border-color: #444;
+            --shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+            --sidebar-bg: #252525;
+            --stat-label-color: #ffffff;
+        }
+
+        body {
+            background-color: var(--bg-body);
+            color: var(--text-primary);
+            transition: all 0.3s;
+            font-size: 15px;
+            overflow-x: hidden;
+        }
+
+        /* HEADER */
+        .header {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: var(--header-height);
+            background: linear-gradient(to right, var(--azul-oscuro), var(--azul-medio));
+            color: white;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0 20px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+            z-index: 1000;
+        }
+
+        .logo-container {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .logo {
+            height: 45px;
+            width: 45px;
+            background: white;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--azul-oscuro);
+            font-size: 20px;
+            font-weight: bold;
+        }
+
+        .logo-text {
+            font-size: 22px;
+            font-weight: 700;
+        }
+
+        .header-left {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+        }
+
+        .menu-toggle {
+            background: none;
+            border: none;
+            color: white;
+            font-size: 20px;
+            cursor: pointer;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            transition: 0.3s;
+        }
+
+        .menu-toggle:hover {
+            background-color: rgba(255,255,255,0.1);
+        }
+
+        .profile-section {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            position: relative;
+        }
+
+        .user-info {
+            text-align: right;
+        }
+
+        .user-name {
+            font-weight: 600;
+            font-size: 15px;
+        }
+
+        .user-role {
+            font-size: 12px;
+            opacity: 0.9;
+        }
+
+        .dark-mode-btn {
+            background: none;
+            border: none;
+            color: white;
+            font-size: 20px;
+            cursor: pointer;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            transition: 0.3s;
+        }
+
+        .dark-mode-btn:hover {
+            background-color: rgba(255,255,255,0.1);
+            transform: scale(1.05);
+        }
+
+        .profile-icon {
+            height: 45px;
+            width: 45px;
+            border-radius: 50%;
+            background-color: rgba(255,255,255,0.2);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 20px;
+            cursor: pointer;
+            transition: 0.3s;
+        }
+
+        .profile-icon:hover {
+            background-color: rgba(255,255,255,0.3);
+            transform: scale(1.05);
+        }
+
+        .profile-dropdown {
+            position: absolute;
+            top: calc(100% + 10px);
+            right: 0;
+            width: 180px;
+            background-color: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            box-shadow: 0 6px 16px rgba(0,0,0,0.1);
+            display: none;
+            flex-direction: column;
+            padding: 8px 0;
+            z-index: 1100;
+        }
+
+        .profile-dropdown.show {
+            display: flex;
+        }
+
+        .profile-dropdown a {
+            padding: 12px 20px;
+            color: var(--text-primary);
+            text-decoration: none;
+            font-size: 15px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            transition: background 0.2s;
+        }
+
+        .profile-dropdown a:hover {
+            background-color: rgba(46,121,186,0.08);
+            color: var(--azul-medio);
+        }
+
+        .profile-dropdown i {
+            width: 20px;
+            text-align: center;
+            color: var(--azul-medio);
+        }
+
+        .main-container {
+            display: flex;
+            margin-top: var(--header-height);
+            min-height: calc(100vh - var(--header-height));
+        }
+
+        .sidebar {
+            width: var(--sidebar-width);
+            background-color: var(--sidebar-bg);
+            box-shadow: 5px 0 15px rgba(0,0,0,0.05);
+            position: fixed;
+            left: 0;
+            top: var(--header-height);
+            height: calc(100vh - var(--header-height));
+            overflow-y: auto;
+            overflow-x: hidden;
+            transition: width 0.3s, transform 0.3s, background-color 0.3s;
+            z-index: 900;
+            border-right: 1px solid var(--border-color);
+            padding: 15px 0;
+        }
+
+        .sidebar.collapsed {
+            width: var(--sidebar-collapsed);
+        }
+
+        .menu {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+            flex-grow: 1;
+        }
+
+        .menu-item {
+            padding: 0;
+            margin: 8px 15px;
+            border-radius: 10px;
+            overflow: hidden;
+        }
+
+        .sidebar.collapsed .menu-item {
+            margin: 8px 10px;
+        }
+
+        .menu-item.active {
+            background-color: rgba(0,56,118,0.1);
+        }
+
+        .menu-link {
+            display: flex;
+            align-items: center;
+            padding: 14px 20px;
+            color: var(--text-primary);
+            text-decoration: none;
+            gap: 15px;
+            white-space: nowrap;
+            border-radius: 10px;
+            transition: 0.3s;
+        }
+
+        .sidebar.collapsed .menu-link {
+            padding: 14px 10px;
+            justify-content: center;
+        }
+
+        .menu-link:hover {
+            background-color: rgba(46,121,186,0.08);
+            color: var(--azul-medio);
+            transform: translateX(3px);
+        }
+
+        .menu-item.active .menu-link {
+            color: var(--azul-oscuro);
+            font-weight: 600;
+            background-color: rgba(0,56,118,0.1);
+            box-shadow: 0 4px 8px rgba(0,56,118,0.1);
+        }
+
+        .menu-icon {
+            font-size: 18px;
+            width: 24px;
+            text-align: center;
+            color: var(--azul-medio);
+        }
+
+        .sidebar.collapsed .menu-text {
+            opacity: 0;
+            width: 0;
+            overflow: hidden;
+        }
+
+        .content {
+            flex: 1;
+            padding: 20px 30px;
+            margin-left: var(--sidebar-width);
+            transition: margin-left 0.3s;
+        }
+
+        .sidebar.collapsed ~ .content {
+            margin-left: var(--sidebar-collapsed);
+        }
+
+        .page-header {
+            margin-bottom: 25px;
+            padding-bottom: 15px;
+            border-bottom: 1px solid var(--border-color);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+
+        .page-title-section {
+            flex: 1;
+        }
+
+        .page-title {
+            color: var(--azul-oscuro);
+            font-size: 26px;
+            font-weight: 700;
+            margin-bottom: 8px;
+        }
+
+        .page-description {
+            color: var(--text-secondary);
+            font-size: 15px;
+            max-width: 800px;
+        }
+
+        .filter-buttons {
+            display: flex;
+            gap: 10px;
+            background-color: var(--bg-card);
+            padding: 5px;
+            border-radius: 8px;
+            box-shadow: var(--shadow);
+        }
+
+        .filter-btn {
+            padding: 8px 20px;
+            border: 1px solid var(--border-color);
+            background: transparent;
+            color: var(--text-primary);
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: 600;
+            font-size: 14px;
+            transition: 0.2s;
+        }
+
+        .filter-btn.active {
+            background-color: var(--azul-medio);
+            color: white;
+            border-color: var(--azul-medio);
+        }
+
+        .filter-btn:hover {
+            background-color: var(--azul-claro);
+            color: white;
+            border-color: var(--azul-claro);
+        }
+
+        .btn {
+            padding: 8px 16px;
+            border-radius: 5px;
+            border: none;
+            cursor: pointer;
+            font-weight: 600;
+            transition: 0.3s;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 14px;
+        }
+
+        .btn-primary {
+            background-color: var(--azul-medio);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background-color: var(--azul-oscuro);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0,56,118,0.2);
+        }
+
+        .btn-secondary {
+            background-color: transparent;
+            color: var(--text-primary);
+            border: 1px solid var(--border-color);
+        }
+
+        .btn-secondary:hover {
+            background-color: rgba(46,121,186,0.05);
+            border-color: var(--azul-medio);
+            color: var(--azul-medio);
+        }
+
+        .btn-link {
+            background: none;
+            border: none;
+            color: var(--azul-medio);
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 600;
+            text-decoration: underline;
+            padding: 0;
+        }
+
+        .btn-link:hover {
+            color: var(--azul-oscuro);
+        }
+
+        .btn-filter {
+            background-color: var(--azul-medio);
+            color: white;
+            border: 1px solid var(--azul-medio);
+        }
+        .btn-filter:hover {
+            background-color: var(--azul-oscuro);
+            border-color: var(--azul-oscuro);
+        }
+
+        .stats-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+            gap: 20px;
+            margin-bottom: 35px;
+        }
+
+        .stat-card {
+            background-color: var(--bg-card);
+            border-radius: 10px;
+            padding: 20px;
+            box-shadow: var(--shadow);
+            transition: 0.3s;
+            position: relative;
+            border-top: 5px solid transparent;
+            padding-right: 70px;
+        }
+
+        .stat-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 20px rgba(0,0,0,0.1);
+        }
+
+        .card-ingresos { border-top-color: #28a745; }
+        .card-pendiente { border-top-color: #ffc107; }
+        .card-cobrado { border-top-color: #17a2b8; }
+        .card-morosos { border-top-color: #6f42c1; }
+
+        .stat-card.card-empresas { border-top-color: #2E79BA; }
+        .stat-card.card-empleados { border-top-color: #003876; }
+        .stat-card.card-clientes { border-top-color: #7F9CD6; }
+        .stat-card.card-dispositivos { border-top-color: #2E79BA; }
+        .stat-card.card-reportes { border-top-color: #003876; }
+
+        .stat-icon {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            width: 40px;
+            height: 40px;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 20px;
+            color: white;
+        }
+
+        .stat-icon.dashboard { background: linear-gradient(135deg, var(--azul-claro), var(--azul-medio)); }
+        .stat-icon.empresas { background: linear-gradient(135deg, #7F9CD6, #2E79BA); }
+        .stat-icon.empleados { background: linear-gradient(135deg, #2E79BA, #003876); }
+        .stat-icon.clientes { background: linear-gradient(135deg, #7F9CD6, #003876); }
+        .stat-icon.dispositivos { background: linear-gradient(135deg, #2E79BA, #7F9CD6); }
+        .stat-icon.reportes { background: linear-gradient(135deg, #003876, #2E79BA); }
+
+        .stat-label {
+            color: var(--stat-label-color);
+            font-size: 17px;
+            font-weight: 600;
+            margin-bottom: 8px;
+        }
+
+        .stat-value {
+            font-size: 24px;
+            font-weight: 700;
+            margin-bottom: 5px;
+            color: var(--azul-oscuro);
+        }
+
+        .stat-complement {
+            font-size: 14px;
+            color: var(--text-secondary);
+            margin-top: 10px;
+        }
+
+        /* BUSCADOR */
+        .search-bar {
+            background-color: var(--bg-card);
+            padding: 15px 20px;
+            border-bottom: 1px solid var(--border-color);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .search-bar input {
+            flex: 1;
+            padding: 10px 15px;
+            border: 1px solid var(--border-color);
+            border-radius: 5px;
+            background-color: var(--bg-body);
+            color: var(--text-primary);
+            font-size: 14px;
+        }
+        .search-bar input:focus {
+            outline: none;
+            border-color: var(--azul-medio);
+        }
+        .btn-clear {
+            background-color: transparent;
+            border: 1px solid var(--border-color);
+            color: var(--text-secondary);
+            padding: 8px 16px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: 0.2s;
+        }
+        .btn-clear:hover {
+            background-color: rgba(220,53,69,0.1);
+            border-color: var(--danger-color);
+            color: var(--danger-color);
+        }
+
+        /* FORMULARIOS UNIFICADOS */
+        .form-container {
+            background-color: var(--bg-card);
+            border-radius: 10px;
+            padding: 25px 30px;
+            box-shadow: var(--shadow);
+            margin-bottom: 25px;
+        }
+        .form-section-title {
+            color: var(--azul-oscuro);
+            font-size: 18px;
+            font-weight: 600;
+            margin-top: 20px;
+            margin-bottom: 15px;
+            border-bottom: 1px solid var(--border-color);
+            padding-bottom: 8px;
+        }
+        .form-section-title:first-of-type {
+            margin-top: 0;
+        }
+        .form-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 20px 30px;
+        }
+        .form-group {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+        }
+        .form-group.full-width {
+            grid-column: span 2;
+        }
+        .form-group label {
+            font-weight: 600;
+            color: var(--text-primary);
+            font-size: 14px;
+        }
+        .form-group input,
+        .form-group select,
+        .form-group textarea {
+            padding: 10px 12px;
+            border: 1px solid var(--border-color);
+            border-radius: 5px;
+            background-color: var(--bg-body);
+            color: var(--text-primary);
+            font-size: 14px;
+        }
+        .form-group input:focus,
+        .form-group select:focus,
+        .form-group textarea:focus {
+            outline: none;
+            border-color: var(--azul-medio);
+        }
+        .form-actions {
+            grid-column: span 2;
+            display: flex;
+            justify-content: flex-end;
+            gap: 15px;
+            margin-top: 20px;
+        }
+
+        .chart-container {
+            background-color: var(--bg-card);
+            border-radius: 10px;
+            padding: 25px;
+            box-shadow: var(--shadow);
+            margin-bottom: 25px;
+        }
+
+        .chart-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .chart-title {
+            color: var(--azul-oscuro);
+            font-size: 20px;
+            font-weight: 600;
+        }
+
+        .chart-wrapper {
+            position: relative;
+            width: 100%;
+            height: 300px;
+        }
+
+        canvas {
+            width: 100% !important;
+            height: 100% !important;
+        }
+
+        .table-container {
+            background-color: var(--bg-card);
+            border-radius: 10px;
+            overflow: hidden;
+            box-shadow: var(--shadow);
+            margin-bottom: 25px;
+        }
+
+        .table-header {
+            padding: 20px;
+            border-bottom: 1px solid var(--border-color);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .table-title {
+            color: var(--azul-oscuro);
+            font-size: 19px;
+            font-weight: 600;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 14px;
+        }
+
+        th {
+            text-align: left;
+            padding: 16px 20px;
+            background-color: #f8f9fa;
+            color: var(--azul-oscuro);
+            font-weight: 600;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        body.dark-mode th {
+            background-color: #2d2d2d;
+        }
+
+        td {
+            padding: 14px 20px;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        tr:last-child td {
+            border-bottom: none;
+        }
+
+        tr:hover td {
+            background-color: #f8f9fa;
+        }
+
+        body.dark-mode tr:hover td {
+            background-color: #2a2a2a;
+        }
+
+        .badge {
+            display: inline-block;
+            padding: 5px 12px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 600;
+        }
+
+        .badge-success {
+            background-color: rgba(40,167,69,0.15);
+            color: #1e7e34;
+        }
+        body.dark-mode .badge-success {
+            background-color: rgba(40,167,69,0.25);
+            color: #8fdf9f;
+        }
+
+        .badge-danger {
+            background-color: rgba(220,53,69,0.15);
+            color: #a71d2a;
+        }
+        body.dark-mode .badge-danger {
+            background-color: rgba(220,53,69,0.25);
+            color: #f8b4bd;
+        }
+
+        .badge-warning {
+            background-color: rgba(255,193,7,0.15);
+            color: #856404;
+        }
+        body.dark-mode .badge-warning {
+            background-color: rgba(255,193,7,0.25);
+            color: #ffe083;
+        }
+
+        .table-footer {
+            padding: 16px 20px;
+            border-top: 1px solid var(--border-color);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 14px;
+            color: var(--text-secondary);
+        }
+
+        .pagination {
+            display: flex;
+            gap: 8px;
+            align-items: center;
+        }
+
+        .pagination button {
+            padding: 6px 12px;
+            border: 1px solid var(--border-color);
+            background: transparent;
+            color: var(--text-primary);
+            border-radius: 4px;
+            cursor: pointer;
+            transition: 0.2s;
+            min-width: 38px;
+        }
+
+        .pagination button.active {
+            background-color: var(--azul-medio);
+            color: white;
+            border-color: var(--azul-medio);
+        }
+
+        .pagination button:hover:not(.active) {
+            background-color: rgba(46,121,186,0.08);
+        }
+
+        .pagination .arrow {
+            font-weight: bold;
+        }
+
+        .rows-select {
+            padding: 6px 12px;
+            border: 1px solid var(--border-color);
+            border-radius: 4px;
+            background: transparent;
+            color: var(--text-primary);
+            cursor: pointer;
+        }
+
+        .action-btn {
+            background: none;
+            border: none;
+            cursor: pointer;
+            font-size: 15px;
+            padding: 5px;
+        }
+
+        @media (max-width: 768px) {
+            .sidebar {
+                transform: translateX(-100%);
+                width: var(--sidebar-width);
+            }
+            .sidebar.open {
+                transform: translateX(0);
+            }
+            .content {
+                margin-left: 0;
+                padding: 15px;
+            }
+            .stats-container {
+                grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+                gap: 15px;
+            }
+            .stat-card {
+                padding-right: 60px;
+            }
+            .stat-icon {
+                width: 35px;
+                height: 35px;
+                font-size: 18px;
+                top: 15px;
+                right: 15px;
+            }
+            .stat-value {
+                font-size: 22px;
+            }
+            .page-header {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 15px;
+            }
+            .filter-buttons {
+                align-self: flex-start;
+            }
+            .chart-wrapper {
+                height: 250px;
+            }
+            .table-footer {
+                flex-direction: column;
+                gap: 15px;
+                align-items: flex-start;
+            }
+            .form-grid {
+                grid-template-columns: 1fr;
+            }
+            .form-group.full-width {
+                grid-column: span 1;
+            }
+            .form-actions {
+                grid-column: span 1;
+            }
+        }
+
+        .module-content {
+            display: none;
+            animation: fadeIn 0.5s;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .module-content.active {
+            display: block;
+        }
+
+        .footer {
+            text-align: center;
+            padding: 20px;
+            color: var(--text-secondary);
+            font-size: 14px;
+            border-top: 1px solid var(--border-color);
+            margin-top: 30px;
+        }
+
+        .chart-placeholder {
+            height: 250px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--text-secondary);
+            background: linear-gradient(to right, #f8f9fa, #e9ecef);
+            border-radius: 8px;
+        }
+        body.dark-mode .chart-placeholder {
+            background: linear-gradient(to right, #2d2d2d, #1e1e1e);
+        }
+    </style>
+</head>
+<body>
+    <header class="header">
+        <div class="header-left">
+            <button class="menu-toggle" id="menuToggle">
+                <i class="fas fa-bars"></i>
+            </button>
+            <div class="logo-container">
+                <div class="logo">HV</div>
+                <div>
+                    <div class="logo-text">Hidroven</div>
+                    <div style="font-size: 11px; opacity: 0.9;">C.A. Hidrológica Venezolana</div>
+                </div>
+            </div>
+        </div>
+        <div class="profile-section">
+            <div class="user-info">
+                <div class="user-name">Carlos Rodríguez</div>
+                <div class="user-role">Administrador</div>
+            </div>
+            <button class="dark-mode-btn" id="darkModeToggle">
+                <i class="fas fa-moon"></i>
+            </button>
+            <div class="profile-icon" id="profileIcon">
+                <i class="fas fa-user"></i>
+            </div>
+            <div class="profile-dropdown" id="profileDropdown">
+                <a href="#"><i class="fas fa-id-card"></i> Perfil</a>
+                <a href="#"><i class="fas fa-sign-out-alt"></i> Cerrar sesión</a>
+            </div>
+        </div>
+    </header>
+
+    <div class="main-container">
+        <nav class="sidebar" id="sidebar">
+            <ul class="menu">
+                <li class="menu-item active" data-module="dashboard">
+                    <a href="#" class="menu-link">
+                        <i class="menu-icon fas fa-home"></i>
+                        <span class="menu-text">Dashboard</span>
+                    </a>
+                </li>
+                <li class="menu-item" data-module="empresas">
+                    <a href="#" class="menu-link">
+                        <i class="menu-icon fas fa-building"></i>
+                        <span class="menu-text">Empresas</span>
+                    </a>
+                </li>
+                <li class="menu-item" data-module="clientes">
+                    <a href="#" class="menu-link">
+                        <i class="menu-icon fas fa-user-tie"></i>
+                        <span class="menu-text">Clientes</span>
+                    </a>
+                </li>
+                <li class="menu-item" data-module="empleados">
+                    <a href="#" class="menu-link">
+                        <i class="menu-icon fas fa-users"></i>
+                        <span class="menu-text">Empleados</span>
+                    </a>
+                </li>
+                <li class="menu-item" data-module="dispositivos">
+                    <a href="#" class="menu-link">
+                        <i class="menu-icon fas fa-microchip"></i>
+                        <span class="menu-text">Dispositivos</span>
+                    </a>
+                </li>
+                <li class="menu-item" data-module="reportes">
+                    <a href="#" class="menu-link">
+                        <i class="menu-icon fas fa-chart-bar"></i>
+                        <span class="menu-text">Reportes</span>
+                    </a>
+                </li>
+            </ul>
+        </nav>
+
+        <main class="content">
+            <!-- DASHBOARD - subtítulo corregido -->
+            <div id="dashboard" class="module-content active">
+                <div class="page-header">
+                    <div class="page-title-section">
+                        <h1 class="page-title">Dashboard</h1>
+                        <p class="page-description">Seguimiento de las empresas hidrológicas nacionales</p>
+                    </div>
+                    <div class="filter-buttons">
+                        <button class="filter-btn active" id="filterDay">Día</button>
+                        <button class="filter-btn" id="filterMonth">Mes</button>
+                    </div>
+                </div>
+                
+                <div class="stats-container">
+                    <div class="stat-card card-ingresos">
+                        <div class="stat-icon dashboard"><i class="fas fa-money-bill-wave"></i></div>
+                        <div class="stat-label">Ingresos Totales</div>
+                        <div class="stat-value">Bs. 245.800.000</div>
+                        <div class="stat-complement">Valor en USD: $491,600</div>
+                    </div>
+                    <div class="stat-card card-pendiente">
+                        <div class="stat-icon dashboard"><i class="fas fa-file-invoice-dollar"></i></div>
+                        <div class="stat-label">Monto por recaudar</div>
+                        <div class="stat-value">Bs. 58.300.000</div>
+                        <div class="stat-complement">Porcentaje de morosidad: 24%</div>
+                    </div>
+                    <div class="stat-card card-cobrado">
+                        <div class="stat-icon dashboard"><i class="fas fa-hand-holding-usd"></i></div>
+                        <div class="stat-label">Monto cobrado</div>
+                        <div class="stat-value">Bs. 187.500.000</div>
+                        <div class="stat-complement">Valor en USD: $375,000</div>
+                    </div>
+                    <div class="stat-card card-morosos">
+                        <div class="stat-icon dashboard"><i class="fas fa-building"></i></div>
+                        <div class="stat-label">Clientes morosos</div>
+                        <div class="stat-value">3</div>
+                        <div class="stat-complement">Total clientes activos: 4</div>
+                    </div>
+                </div>
+                
+                <div class="chart-container">
+                    <div class="chart-header">
+                        <h3 class="chart-title">Evolución de Ingresos</h3>
+                    </div>
+                    <div class="chart-wrapper">
+                        <canvas id="ingresosChart"></canvas>
+                    </div>
+                </div>
+                
+                <div class="table-container">
+                    <div class="table-header">
+                        <h3 class="table-title">Clientes Morosos</h3>
+                        <span style="color: var(--text-secondary);" id="morososFecha">Actualizado: </span>
+                    </div>
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Cliente</th>
+                                <th>Empresa</th>
+                                <th>Deuda Total (Bs.)</th>
+                                <th>Vencido (Bs.)</th>
+                                <th>Por Vencer (Bs.)</th>
+                                <th>Días de Mora</th>
+                                <th>Estado</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>Sambil Chacao</td>
+                                <td>Hidrocapital</td>
+                                <td>15.200.000</td>
+                                <td>12.500.000</td>
+                                <td>2.700.000</td>
+                                <td>152</td>
+                                <td><span class="badge badge-danger">Pendiente</span></td>
+                            </tr>
+                            <tr>
+                                <td>Empresas Polar</td>
+                                <td>Hidrocapital</td>
+                                <td>13.250.000</td>
+                                <td>9.700.000</td>
+                                <td>3.550.000</td>
+                                <td>98</td>
+                                <td><span class="badge badge-danger">Pendiente</span></td>
+                            </tr>
+                            <tr>
+                                <td>Asotrave</td>
+                                <td>Hidrocaribe</td>
+                                <td>12.750.000</td>
+                                <td>9.500.000</td>
+                                <td>3.250.000</td>
+                                <td>98</td>
+                                <td><span class="badge badge-danger">Pendiente</span></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+                
+                <div class="table-container">
+                    <div class="table-header">
+                        <h3 class="table-title">Cobranzas Recientes</h3>
+                        <span style="color: var(--text-secondary);" id="cobranzasFecha">Actualizado: </span>
+                    </div>
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Fecha</th>
+                                <th>Cliente</th>
+                                <th>Empresa</th>
+                                <th>Monto Cobrado (Bs.)</th>
+                                <th>Método de Pago</th>
+                                <th>Responsable</th>
+                                <th>Estado</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>10/02/2026</td>
+                                <td>Proactiva Libertador C.A.</td>
+                                <td>Hidrocentro</td>
+                                <td>3.250.000</td>
+                                <td>Transferencia</td>
+                                <td>María González</td>
+                                <td><span class="badge badge-success">Completado</span></td>
+                            </tr>
+                            <tr>
+                                <td>08/02/2026</td>
+                                <td>Empresas Polar</td>
+                                <td>Hidrocapital</td>
+                                <td>5.100.000</td>
+                                <td>Pago móvil</td>
+                                <td>José Martínez</td>
+                                <td><span class="badge badge-warning">En proceso</span></td>
+                            </tr>
+                            <tr>
+                                <td>05/02/2026</td>
+                                <td>Asotrave</td>
+                                <td>Hidrocaribe</td>
+                                <td>2.800.000</td>
+                                <td>Débito</td>
+                                <td>Ana Rodríguez</td>
+                                <td><span class="badge badge-warning">En proceso</span></td>
+                            </tr>
+                            <tr>
+                                <td>02/02/2026</td>
+                                <td>Sambil Chacao</td>
+                                <td>Hidrocapital</td>
+                                <td>1.500.000</td>
+                                <td>Efectivo</td>
+                                <td>Carlos Pérez</td>
+                                <td><span class="badge badge-success">Completado</span></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- MÓDULO EMPRESAS - CON SECCIÓN "Clientes asociados" -->
+            <div id="empresas" class="module-content">
+                <div class="page-header">
+                    <div class="page-title-section">
+                        <h1 class="page-title">Empresas Hidrológicas</h1>
+                        <p class="page-description">Gestión de las empresas proveedoras de servicio de agua</p>
+                    </div>
+                    <div style="display: flex; gap: 10px;">
+                        <button class="btn btn-filter" id="btnFiltroEmpresas"><i class="fas fa-filter"></i> Filtro</button>
+                        <button class="btn btn-primary" id="btnCrearEmpresa"><i class="fas fa-plus"></i> Crear</button>
+                    </div>
+                </div>
+                
+                <div id="buscadorEmpresas" class="search-bar" style="display: none;">
+                    <i class="fas fa-search" style="color: var(--text-secondary);"></i>
+                    <input type="text" id="searchInputEmpresas" placeholder="Buscar por RIF o Nombre...">
+                    <button class="btn-clear" id="btnLimpiarFiltroEmpresas"><i class="fas fa-times"></i> Limpiar</button>
+                </div>
+                
+                <div id="tablaEmpresasContainer">
+                    <div class="table-container">
+                        <table id="tablaEmpresas">
+                            <thead>
+                                <tr>
+                                    <th>RIF</th>
+                                    <th>Nombre</th>
+                                    <th>Clientes asociados</th>
+                                    <th>Estado</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td><button class="btn-link" onclick="editarEmpresa('Hidrocapital')">J000123456</button></td>
+                                    <td>Hidrocapital</td>
+                                    <td>2</td>
+                                    <td><span class="badge badge-success">Activo</span></td>
+                                </tr>
+                                <tr>
+                                    <td><button class="btn-link" onclick="alert('Ver detalles de Hidrocentro')">J000543217</button></td>
+                                    <td>Hidrocentro</td>
+                                    <td>1</td>
+                                    <td><span class="badge badge-success">Activo</span></td>
+                                </tr>
+                                <tr>
+                                    <td><button class="btn-link" onclick="alert('Ver detalles de Hidrocaribe')">J000678908</button></td>
+                                    <td>Hidrocaribe</td>
+                                    <td>1</td>
+                                    <td><span class="badge badge-success">Activo</span></td>
+                                </tr>
+                            </tbody>
+                        </table>
+                        <div class="table-footer">
+                            <div id="mostrandoEmpresas">Mostrando 3 empresas</div>
+                            <div class="pagination">
+                                <button class="arrow" onclick="cambiarPaginaEmpresas('prev')"><i class="fas fa-chevron-left"></i></button>
+                                <button class="active">1</button>
+                                <button onclick="cambiarPaginaEmpresas(2)">2</button>
+                                <button onclick="cambiarPaginaEmpresas(3)">3</button>
+                                <button onclick="cambiarPaginaEmpresas(4)">4</button>
+                                <button onclick="cambiarPaginaEmpresas(5)">5</button>
+                                <button class="arrow" onclick="cambiarPaginaEmpresas('next')"><i class="fas fa-chevron-right"></i></button>
+                            </div>
+                            <div>
+                                <select class="rows-select" id="rowsPerPageEmpresas">
+                                    <option value="10" selected>10</option>
+                                    <option value="15">15</option>
+                                    <option value="20">20</option>
+                                </select>
+                                <span style="margin-left: 5px;">datos</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div id="formularioEmpresaContainer" class="form-container" style="display: none;">
+                    <div class="form-section-title">Datos de la empresa</div>
+                    <form id="empresaForm" class="form-grid">
+                        <div class="form-group">
+                            <label>Nombre de la empresa</label>
+                            <input type="text" id="nombreEmpresa" placeholder="Ej. Hidrocapital">
+                        </div>
+                        <div class="form-group">
+                            <label>Razón social</label>
+                            <input type="text" id="razonSocial" placeholder="Ej. Hidrocapital C.A.">
+                        </div>
+                        <div class="form-group">
+                            <label>Tipo de documento</label>
+                            <select id="tipoDocumentoEmpresa">
+                                <option value="J">J (Jurídico)</option>
+                                <option value="V">V (Venezolano)</option>
+                                <option value="E">E (Extranjero)</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label>Número de documento</label>
+                            <input type="text" id="numeroDocumentoEmpresa" placeholder="000123456">
+                        </div>
+                        <div class="form-group">
+                            <label>Número de teléfono</label>
+                            <input type="tel" id="telefonoEmpresa" placeholder="02121234567">
+                        </div>
+                        <div class="form-group">
+                            <label>Correo</label>
+                            <input type="email" id="correoEmpresa" placeholder="contacto@hidrocapital.com">
+                        </div>
+                        <div class="form-group full-width">
+                            <label>Dirección</label>
+                            <input type="text" id="direccionEmpresa" placeholder="Av. Principal, Caracas">
+                        </div>
+                        <div class="form-group">
+                            <label>Estado</label>
+                            <select id="estadoEmpresaSelect">
+                                <option value="Activo">Activo</option>
+                                <option value="Inactivo">Inactivo</option>
+                            </select>
+                        </div>
+                        
+                        <!-- NUEVA SECCIÓN: Clientes asociados -->
+                        <div class="form-section-title">Clientes asociados</div>
+                        <div class="form-group full-width">
+                            <label>Seleccione los clientes de esta empresa</label>
+                            <select id="clientesAsociadosEmpresa" multiple size="4">
+                                <option value="Sambil Chacao">Sambil Chacao</option>
+                                <option value="Empresas Polar">Empresas Polar</option>
+                                <option value="Proactiva Libertador C.A.">Proactiva Libertador C.A.</option>
+                                <option value="Asotrave">Asotrave</option>
+                            </select>
+                            <small style="color: var(--text-secondary);">Presione Ctrl para seleccionar múltiples</small>
+                        </div>
+                        
+                        <div class="form-actions">
+                            <button type="button" class="btn btn-secondary" id="btnRegresarEmpresa"><i class="fas fa-arrow-left"></i> Regresar</button>
+                            <button type="submit" class="btn btn-primary" id="btnGuardarEmpresa"><i class="fas fa-save"></i> Crear</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+
+            <!-- MÓDULO CLIENTES - ESTRUCTURA DEFINITIVA -->
+            <div id="clientes" class="module-content">
+                <div class="page-header">
+                    <div class="page-title-section">
+                        <h1 class="page-title">Clientes</h1>
+                        <p class="page-description">Gestión de clientes asociados a las empresas hidrológicas</p>
+                    </div>
+                    <div style="display: flex; gap: 10px;">
+                        <button class="btn btn-filter" id="btnFiltroClientes"><i class="fas fa-filter"></i> Filtro</button>
+                        <button class="btn btn-primary" id="btnCrearCliente"><i class="fas fa-plus"></i> Crear</button>
+                    </div>
+                </div>
+                
+                <div id="buscadorClientes" class="search-bar" style="display: none;">
+                    <i class="fas fa-search" style="color: var(--text-secondary);"></i>
+                    <input type="text" id="searchInputClientes" placeholder="Buscar por Documento de identidad, Nombre y Empresa">
+                    <button class="btn-clear" id="btnLimpiarFiltroClientes"><i class="fas fa-times"></i> Limpiar</button>
+                </div>
+                
+                <div id="tablaClientesContainer">
+                    <div class="table-container">
+                        <table id="tablaClientes">
+                            <thead>
+                                <tr>
+                                    <th>Documento de identidad</th>
+                                    <th>Nombre</th>
+                                    <th>Empresa</th>
+                                    <th>Deuda (Bs.)</th>
+                                    <th>Último Pago</th>
+                                    <th>Estado</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td><button class="btn-link" onclick="editarCliente('Sambil Chacao')">J123456789</button></td>
+                                    <td>Sambil Chacao</td>
+                                    <td>Hidrocapital</td>
+                                    <td>15.200.000</td>
+                                    <td>02/02/2026</td>
+                                    <td><span class="badge badge-danger">Pendiente</span></td>
+                                </tr>
+                                <tr>
+                                    <td><button class="btn-link" onclick="alert('Ver detalles de Empresas Polar')">J987654321</button></td>
+                                    <td>Empresas Polar</td>
+                                    <td>Hidrocapital</td>
+                                    <td>13.250.000</td>
+                                    <td>08/02/2026</td>
+                                    <td><span class="badge badge-danger">Pendiente</span></td>
+                                </tr>
+                                <tr>
+                                    <td><button class="btn-link" onclick="alert('Ver detalles de Proactiva Libertador C.A.')">J112233445</button></td>
+                                    <td>Proactiva Libertador C.A.</td>
+                                    <td>Hidrocentro</td>
+                                    <td>0</td>
+                                    <td>10/02/2026</td>
+                                    <td><span class="badge badge-success">Solvente</span></td>
+                                </tr>
+                                <tr>
+                                    <td><button class="btn-link" onclick="alert('Ver detalles de Asotrave')">J556677880</button></td>
+                                    <td>Asotrave</td>
+                                    <td>Hidrocaribe</td>
+                                    <td>12.750.000</td>
+                                    <td>05/02/2026</td>
+                                    <td><span class="badge badge-danger">Pendiente</span></td>
+                                </tr>
+                            </tbody>
+                        </table>
+                        <div class="table-footer">
+                            <div id="mostrandoClientes">Mostrando 4 clientes</div>
+                            <div class="pagination">
+                                <button class="arrow" onclick="cambiarPaginaClientes('prev')"><i class="fas fa-chevron-left"></i></button>
+                                <button class="active">1</button>
+                                <button onclick="cambiarPaginaClientes(2)">2</button>
+                                <button onclick="cambiarPaginaClientes(3)">3</button>
+                                <button onclick="cambiarPaginaClientes(4)">4</button>
+                                <button onclick="cambiarPaginaClientes(5)">5</button>
+                                <button class="arrow" onclick="cambiarPaginaClientes('next')"><i class="fas fa-chevron-right"></i></button>
+                            </div>
+                            <div>
+                                <select class="rows-select" id="rowsPerPageClientes">
+                                    <option value="10" selected>10</option>
+                                    <option value="15">15</option>
+                                    <option value="20">20</option>
+                                </select>
+                                <span style="margin-left: 5px;">datos</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- FORMULARIO DE CLIENTE - ESTRUCTURA CORREGIDA -->
+                <div id="formularioClienteContainer" class="form-container" style="display: none;">
+                    <!-- SECCIÓN 1: Datos de cliente -->
+                    <div class="form-section-title">Datos de cliente</div>
+                    <form id="clienteForm" class="form-grid">
+                        <div class="form-group">
+                            <label>Nombre</label>
+                            <input type="text" id="nombreCliente" placeholder="Ej. Sambil Chacao">
+                        </div>
+                        <div class="form-group">
+                            <label>Razón social</label>
+                            <input type="text" id="razonSocialCliente" placeholder="Ej. Sambil Chacao C.A.">
+                        </div>
+                        <div class="form-group">
+                            <label>Tipo de documento</label>
+                            <select id="tipoDocumentoCliente">
+                                <option value="J">J (Jurídico)</option>
+                                <option value="V">V (Venezolano)</option>
+                                <option value="E">E (Extranjero)</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label>Documento de identidad</label>
+                            <input type="text" id="numeroDocumentoCliente" placeholder="123456789">
+                        </div>
+                        <div class="form-group">
+                            <label>Correo</label>
+                            <input type="email" id="correoCliente" placeholder="contacto@cliente.com">
+                        </div>
+                        <div class="form-group">
+                            <label>Empresa asociada</label>
+                            <select id="empresaCliente">
+                                <option value="Hidrocapital">Hidrocapital</option>
+                                <option value="Hidrocentro">Hidrocentro</option>
+                                <option value="Hidrocaribe">Hidrocaribe</option>
+                            </select>
+                        </div>
+                        
+                        <!-- SECCIÓN 2: Dirección -->
+                        <div class="form-section-title">Dirección</div>
+                        <div class="form-group">
+                            <label>Estado</label>
+                            <input type="text" id="estadoClienteDir" placeholder="Ej. Miranda">
+                        </div>
+                        <div class="form-group">
+                            <label>Municipio</label>
+                            <input type="text" id="municipioCliente" placeholder="Ej. Chacao">
+                        </div>
+                        <div class="form-group full-width">
+                            <label>Dirección</label>
+                            <input type="text" id="direccionCliente" placeholder="Ej. Av. Francisco de Miranda, CC Sambil">
+                        </div>
+                        
+                        <!-- SECCIÓN 3: Datos del representante legal -->
+                        <div class="form-section-title">Datos del representante legal</div>
+                        <div class="form-group">
+                            <label>Nombre y Apellido</label>
+                            <input type="text" id="repNombreCliente" placeholder="Ej. Juan Pérez">
+                        </div>
+                        <div class="form-group">
+                            <label>Tipo de documento</label>
+                            <select id="repTipoDocumentoCliente">
+                                <option value="V">V</option>
+                                <option value="E">E</option>
+                                <option value="J">J</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label>Documento de identidad</label>
+                            <input type="text" id="repDocumentoCliente" placeholder="12345678">
+                        </div>
+                        <div class="form-group">
+                            <label>Número de contacto</label>
+                            <input type="tel" id="repTelefonoCliente" placeholder="04121234567">
+                        </div>
+                        <div class="form-group">
+                            <label>Correo</label>
+                            <input type="email" id="repCorreoCliente" placeholder="juan.perez@example.com">
+                        </div>
+                        
+                        <div class="form-actions">
+                            <button type="button" class="btn btn-secondary" id="btnRegresarCliente"><i class="fas fa-arrow-left"></i> Regresar</button>
+                            <button type="submit" class="btn btn-primary" id="btnGuardarCliente"><i class="fas fa-save"></i> Guardar</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+
+            <!-- MÓDULO EMPLEADOS -->
+            <div id="empleados" class="module-content">
+                <div class="page-header">
+                    <div class="page-title-section">
+                        <h1 class="page-title">Empleados</h1>
+                        <p class="page-description">Gestión de usuarios con permisos de acceso</p>
+                    </div>
+                    <div style="display: flex; gap: 10px;">
+                        <button class="btn btn-filter" id="btnFiltroEmpleados"><i class="fas fa-filter"></i> Filtro</button>
+                        <button class="btn btn-primary" id="btnCrearEmpleado"><i class="fas fa-plus"></i> Crear</button>
+                    </div>
+                </div>
+                
+                <div id="buscadorEmpleados" class="search-bar" style="display: none;">
+                    <i class="fas fa-search" style="color: var(--text-secondary);"></i>
+                    <input type="text" id="searchInputEmpleados" placeholder="Buscar por Usuario, Nombre o Empresa">
+                    <button class="btn-clear" id="btnLimpiarFiltroEmpleados"><i class="fas fa-times"></i> Limpiar</button>
+                </div>
+                
+                <div id="tablaEmpleadosContainer">
+                    <div class="table-container">
+                        <table id="tablaEmpleados">
+                            <thead>
+                                <tr>
+                                    <th>Usuario</th>
+                                    <th>Nombre</th>
+                                    <th>Empresa</th>
+                                    <th>Cargo</th>
+                                    <th>Estado</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td><button class="btn-link" onclick="editarEmpleado('mgonzalez')">mgonzalez</button></td>
+                                    <td>María González</td>
+                                    <td>Hidrocapital</td>
+                                    <td>Administrador</td>
+                                    <td><span class="badge badge-success">Activo</span></td>
+                                </tr>
+                                <tr>
+                                    <td><button class="btn-link" onclick="alert('Ver detalles de jmartinez')">jmartinez</button></td>
+                                    <td>José Martínez</td>
+                                    <td>Hidrocentro</td>
+                                    <td>Visualizador</td>
+                                    <td><span class="badge badge-success">Activo</span></td>
+                                </tr>
+                                <tr>
+                                    <td><button class="btn-link" onclick="alert('Ver detalles de arodriguez')">arodriguez</button></td>
+                                    <td>Ana Rodríguez</td>
+                                    <td>Hidrocaribe</td>
+                                    <td>Recaudador</td>
+                                    <td><span class="badge badge-success">Activo</span></td>
+                                </tr>
+                                <tr>
+                                    <td><button class="btn-link" onclick="alert('Ver detalles de cperez')">cperez</button></td>
+                                    <td>Carlos Pérez</td>
+                                    <td>Hidrocapital</td>
+                                    <td>Recaudador</td>
+                                    <td><span class="badge badge-success">Activo</span></td>
+                                </tr>
+                            </tbody>
+                        </table>
+                        <div class="table-footer">
+                            <div id="mostrandoEmpleados">Mostrando 4 empleados</div>
+                            <div class="pagination">
+                                <button class="arrow" onclick="cambiarPaginaEmpleados('prev')"><i class="fas fa-chevron-left"></i></button>
+                                <button class="active">1</button>
+                                <button onclick="cambiarPaginaEmpleados(2)">2</button>
+                                <button onclick="cambiarPaginaEmpleados(3)">3</button>
+                                <button onclick="cambiarPaginaEmpleados(4)">4</button>
+                                <button onclick="cambiarPaginaEmpleados(5)">5</button>
+                                <button class="arrow" onclick="cambiarPaginaEmpleados('next')"><i class="fas fa-chevron-right"></i></button>
+                            </div>
+                            <div>
+                                <select class="rows-select" id="rowsPerPageEmpleados">
+                                    <option value="10" selected>10</option>
+                                    <option value="15">15</option>
+                                    <option value="20">20</option>
+                                </select>
+                                <span style="margin-left: 5px;">datos</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div id="formularioEmpleadoContainer" class="form-container" style="display: none;">
+                    <div class="form-section-title">Datos del empleado</div>
+                    <form id="empleadoForm" class="form-grid">
+                        <div class="form-group">
+                            <label>Nombre y Apellido</label>
+                            <input type="text" id="nombreApellidoEmpleado" placeholder="Ej. María González">
+                        </div>
+                        <div class="form-group">
+                            <label>Usuario</label>
+                            <input type="text" id="usuarioEmpleado" placeholder="mgonzalez">
+                        </div>
+                        <div class="form-group">
+                            <label>Tipo de documento</label>
+                            <select id="tipoDocumentoEmpleado">
+                                <option value="V">V (Venezolano)</option>
+                                <option value="E">E (Extranjero)</option>
+                                <option value="J">J (Jurídico)</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label>Documento de identidad</label>
+                            <input type="text" id="documentoEmpleado" placeholder="12345678">
+                        </div>
+                        <div class="form-group">
+                            <label>Empresa</label>
+                            <select id="empresaEmpleado">
+                                <option value="Hidrocapital">Hidrocapital</option>
+                                <option value="Hidrocentro">Hidrocentro</option>
+                                <option value="Hidrocaribe">Hidrocaribe</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label>Correo</label>
+                            <input type="email" id="correoEmpleado" placeholder="maria.gonzalez@hidroven.com">
+                        </div>
+                        
+                        <div class="form-section-title">Datos del usuario</div>
+                        <div class="form-group">
+                            <label>Usuario</label>
+                            <input type="text" id="usuarioSistemaEmpleado" placeholder="mgonzalez">
+                        </div>
+                        <div class="form-group">
+                            <label>Rol</label>
+                            <select id="rolEmpleado">
+                                <option value="Administrador">Administrador</option>
+                                <option value="Visualizador">Visualizador</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label>Estado</label>
+                            <select id="estadoEmpleado">
+                                <option value="Activo">Activo</option>
+                                <option value="Inactivo">Inactivo</option>
+                            </select>
+                        </div>
+                        <div class="form-actions">
+                            <button type="button" class="btn btn-secondary" id="btnRegresarEmpleado"><i class="fas fa-arrow-left"></i> Regresar</button>
+                            <button type="submit" class="btn btn-primary" id="btnGuardarEmpleado"><i class="fas fa-save"></i> Guardar</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+
+            <!-- MÓDULO DISPOSITIVOS -->
+            <div id="dispositivos" class="module-content">
+                <div class="page-header">
+                    <div class="page-title-section">
+                        <h1 class="page-title">Dispositivos de Medición</h1>
+                        <p class="page-description">Gestión de medidores y telemetría instalados en clientes</p>
+                    </div>
+                    <div style="display: flex; gap: 10px;">
+                        <button class="btn btn-filter" id="btnFiltroDispositivos"><i class="fas fa-filter"></i> Filtro</button>
+                        <button class="btn btn-primary" id="btnCrearDispositivo"><i class="fas fa-plus"></i> Crear</button>
+                    </div>
+                </div>
+                
+                <div id="buscadorDispositivos" class="search-bar" style="display: none;">
+                    <i class="fas fa-search" style="color: var(--text-secondary);"></i>
+                    <input type="text" id="searchInputDispositivos" placeholder="Buscar por Cliente o Empresa">
+                    <button class="btn-clear" id="btnLimpiarFiltroDispositivos"><i class="fas fa-times"></i> Limpiar</button>
+                </div>
+                
+                <div id="tablaDispositivosContainer">
+                    <div class="table-container">
+                        <table id="tablaDispositivos">
+                            <thead>
+                                <tr>
+                                    <th>Cliente</th>
+                                    <th>Empresa</th>
+                                    <th>Medidores</th>
+                                    <th>Sensores</th>
+                                    <th>Telemetría</th>
+                                    <th>Total</th>
+                                    <th>Estado</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td><button class="btn-link" onclick="editarDispositivo('Sambil Chacao')">Sambil Chacao</button></td>
+                                    <td>Hidrocapital</td>
+                                    <td>32</td>
+                                    <td>8</td>
+                                    <td>4</td>
+                                    <td>44</td>
+                                    <td><span class="badge badge-success">96% Operativo</span></td>
+                                </tr>
+                                <tr>
+                                    <td><button class="btn-link" onclick="alert('Ver detalles de Empresas Polar')">Empresas Polar</button></td>
+                                    <td>Hidrocapital</td>
+                                    <td>28</td>
+                                    <td>6</td>
+                                    <td>3</td>
+                                    <td>37</td>
+                                    <td><span class="badge badge-warning">89% Operativo</span></td>
+                                </tr>
+                                <tr>
+                                    <td><button class="btn-link" onclick="alert('Ver detalles de Proactiva Libertador C.A.')">Proactiva Libertador C.A.</button></td>
+                                    <td>Hidrocentro</td>
+                                    <td>18</td>
+                                    <td>4</td>
+                                    <td>2</td>
+                                    <td>24</td>
+                                    <td><span class="badge badge-success">98% Operativo</span></td>
+                                </tr>
+                                <tr>
+                                    <td><button class="btn-link" onclick="alert('Ver detalles de Asotrave')">Asotrave</button></td>
+                                    <td>Hidrocaribe</td>
+                                    <td>15</td>
+                                    <td>5</td>
+                                    <td>2</td>
+                                    <td>22</td>
+                                    <td><span class="badge badge-success">95% Operativo</span></td>
+                                </tr>
+                            </tbody>
+                        </table>
+                        <div class="table-footer">
+                            <div id="mostrandoDispositivos">Mostrando 4 dispositivos</div>
+                            <div class="pagination">
+                                <button class="arrow" onclick="cambiarPaginaDispositivos('prev')"><i class="fas fa-chevron-left"></i></button>
+                                <button class="active">1</button>
+                                <button onclick="cambiarPaginaDispositivos(2)">2</button>
+                                <button onclick="cambiarPaginaDispositivos(3)">3</button>
+                                <button onclick="cambiarPaginaDispositivos(4)">4</button>
+                                <button onclick="cambiarPaginaDispositivos(5)">5</button>
+                                <button class="arrow" onclick="cambiarPaginaDispositivos('next')"><i class="fas fa-chevron-right"></i></button>
+                            </div>
+                            <div>
+                                <select class="rows-select" id="rowsPerPageDispositivos">
+                                    <option value="10" selected>10</option>
+                                    <option value="15">15</option>
+                                    <option value="20">20</option>
+                                </select>
+                                <span style="margin-left: 5px;">datos</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div id="formularioDispositivoContainer" class="form-container" style="display: none;">
+                    <div class="form-section-title">Datos del dispositivo</div>
+                    <form id="dispositivoForm" class="form-grid">
+                        <div class="form-group">
+                            <label>Cliente</label>
+                            <select id="clienteDispositivo">
+                                <option value="Sambil Chacao">Sambil Chacao</option>
+                                <option value="Empresas Polar">Empresas Polar</option>
+                                <option value="Proactiva Libertador C.A.">Proactiva Libertador C.A.</option>
+                                <option value="Asotrave">Asotrave</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label>Empresa</label>
+                            <select id="empresaDispositivo">
+                                <option value="Hidrocapital">Hidrocapital</option>
+                                <option value="Hidrocentro">Hidrocentro</option>
+                                <option value="Hidrocaribe">Hidrocaribe</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label>Medidores</label>
+                            <input type="number" id="medidoresDispositivo" placeholder="0">
+                        </div>
+                        <div class="form-group">
+                            <label>Sensores</label>
+                            <input type="number" id="sensoresDispositivo" placeholder="0">
+                        </div>
+                        <div class="form-group">
+                            <label>Telemetría</label>
+                            <input type="number" id="telemetriaDispositivo" placeholder="0">
+                        </div>
+                        <div class="form-group">
+                            <label>Total</label>
+                            <input type="text" id="totalDispositivo" placeholder="Calculado automáticamente" readonly>
+                        </div>
+                        <div class="form-section-title">Configuración</div>
+                        <div class="form-group">
+                            <label>Estado operativo</label>
+                            <select id="estadoDispositivo">
+                                <option value="98% Operativo">98% Operativo</option>
+                                <option value="95% Operativo">95% Operativo</option>
+                                <option value="89% Operativo">89% Operativo</option>
+                                <option value="85% Operativo">85% Operativo</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label>Último mantenimiento</label>
+                            <input type="text" id="ultimoMantenimientoDispositivo" placeholder="DD/MM/AAAA">
+                        </div>
+                        <div class="form-actions">
+                            <button type="button" class="btn btn-secondary" id="btnRegresarDispositivo"><i class="fas fa-arrow-left"></i> Regresar</button>
+                            <button type="submit" class="btn btn-primary" id="btnGuardarDispositivo"><i class="fas fa-save"></i> Guardar</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+
+            <!-- MÓDULO REPORTES (sin cambios) -->
+            <div id="reportes" class="module-content">
+                <div class="page-header">
+                    <div class="page-title-section">
+                        <h1 class="page-title">Reportes Financieros</h1>
+                        <p class="page-description">Informes de cobranzas, deudas y gestión de clientes.</p>
+                    </div>
+                </div>
+                <div class="stats-container">
+                    <div class="stat-card card-reportes">
+                        <div class="stat-icon reportes"><i class="fas fa-file-alt"></i></div>
+                        <div class="stat-label">Reportes Generados</div>
+                        <div class="stat-value">48</div>
+                    </div>
+                    <div class="stat-card card-reportes">
+                        <div class="stat-icon reportes"><i class="fas fa-chart-line"></i></div>
+                        <div class="stat-label">Indicadores</div>
+                        <div class="stat-value">12</div>
+                    </div>
+                    <div class="stat-card card-reportes">
+                        <div class="stat-icon reportes"><i class="fas fa-download"></i></div>
+                        <div class="stat-label">Descargas Mes</div>
+                        <div class="stat-value">1.245</div>
+                    </div>
+                    <div class="stat-card card-reportes">
+                        <div class="stat-icon reportes"><i class="fas fa-clock"></i></div>
+                        <div class="stat-label">Reportes a Tiempo</div>
+                        <div class="stat-value">100%</div>
+                    </div>
+                </div>
+                <div class="table-container">
+                    <div class="table-header">
+                        <h3 class="table-title">Reportes Disponibles</h3>
+                        <button class="btn btn-primary"><i class="fas fa-plus"></i> Nuevo Reporte</button>
+                    </div>
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>ID</th>
+                                <th>Nombre</th>
+                                <th>Frecuencia</th>
+                                <th>Última Generación</th>
+                                <th>Descargas</th>
+                                <th>Acciones</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>FIN-2026-001</td>
+                                <td>Estado de Cobranzas por Cliente</td>
+                                <td>Mensual</td>
+                                <td>01/02/2026</td>
+                                <td>245</td>
+                                <td><button class="btn btn-primary" style="padding:5px 10px;"><i class="fas fa-eye"></i> Ver</button> <button class="btn" style="padding:5px 10px; background:#f8f9fa; color:var(--azul-oscuro); border:1px solid #ddd;"><i class="fas fa-download"></i> Descargar</button></td>
+                            </tr>
+                            <tr>
+                                <td>FIN-2026-002</td>
+                                <td>Deudas por Empresa</td>
+                                <td>Semanal</td>
+                                <td>08/02/2026</td>
+                                <td>180</td>
+                                <td><button class="btn btn-primary" style="padding:5px 10px;"><i class="fas fa-eye"></i> Ver</button> <button class="btn" style="padding:5px 10px; background:#f8f9fa; color:var(--azul-oscuro); border:1px solid #ddd;"><i class="fas fa-download"></i> Descargar</button></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <footer class="footer">
+                <p>Sistema de Gestión Hidroven © 2026</p>
+            </footer>
+        </main>
+    </div>
+
+    <script>
+        // ---------- FUNCIONES GENERALES ----------
+        let sidebarCollapsed = false;
+        let ingresosChart;
+
+        function getTodayDate() {
+            const today = new Date();
+            const day = String(today.getDate()).padStart(2,'0');
+            const month = String(today.getMonth()+1).padStart(2,'0');
+            const year = today.getFullYear();
+            return `${day}/${month}/${year}`;
+        }
+
+        function resetModule(moduleId) {
+            const module = document.getElementById(moduleId);
+            if (!module) return;
+            
+            const searchBars = module.querySelectorAll('.search-bar');
+            searchBars.forEach(sb => sb.style.display = 'none');
+            
+            const tablaContainers = module.querySelectorAll('[id$=Container]');
+            tablaContainers.forEach(container => {
+                if (container.id.includes('tabla')) {
+                    container.style.display = 'block';
+                } else if (container.id.includes('formulario')) {
+                    container.style.display = 'none';
+                }
+            });
+            
+            const searchInputs = module.querySelectorAll('.search-bar input[type="text"]');
+            searchInputs.forEach(input => { input.value = ''; });
+            
+            setTimeout(() => {
+                searchInputs.forEach(input => {
+                    input.dispatchEvent(new Event('keyup'));
+                });
+            }, 10);
+        }
+
+        function changeModule(moduleId) {
+            document.querySelectorAll('.module-content').forEach(m => m.classList.remove('active'));
+            document.getElementById(moduleId).classList.add('active');
+            document.querySelectorAll('.menu-item').forEach(item => {
+                item.classList.remove('active');
+                if (item.getAttribute('data-module') === moduleId) item.classList.add('active');
+            });
+            
+            resetModule(moduleId);
+            
+            if (moduleId === 'dashboard' && ingresosChart) ingresosChart.resize();
+        }
+
+        function toggleSidebar() {
+            const sidebar = document.getElementById('sidebar');
+            sidebarCollapsed = !sidebarCollapsed;
+            sidebar.classList.toggle('collapsed');
+            document.querySelector('#menuToggle i').className = sidebarCollapsed ? 'fas fa-chevron-right' : 'fas fa-bars';
+            if (ingresosChart) ingresosChart.resize();
+        }
+
+        function initDarkMode() {
+            const toggle = document.getElementById('darkModeToggle');
+            const icon = toggle.querySelector('i');
+            const body = document.body;
+            if (localStorage.getItem('darkMode') === 'true') {
+                body.classList.add('dark-mode');
+                icon.className = 'fas fa-sun';
+            }
+            toggle.addEventListener('click', ()=>{
+                body.classList.toggle('dark-mode');
+                const isDark = body.classList.contains('dark-mode');
+                localStorage.setItem('darkMode', isDark);
+                icon.className = isDark ? 'fas fa-sun' : 'fas fa-moon';
+                if (ingresosChart) ingresosChart.resize();
+            });
+        }
+
+        function initProfileDropdown() {
+            const icon = document.getElementById('profileIcon');
+            const dropdown = document.getElementById('profileDropdown');
+            icon.addEventListener('click', (e)=>{
+                e.stopPropagation();
+                dropdown.classList.toggle('show');
+            });
+            document.addEventListener('click', (e)=>{
+                if (!icon.contains(e.target) && !dropdown.contains(e.target)) dropdown.classList.remove('show');
+            });
+            dropdown.addEventListener('click', e=>e.stopPropagation());
+        }
+
+        // ---------- GRÁFICO ----------
+        function initChart() {
+            const ctx = document.getElementById('ingresosChart').getContext('2d');
+            const dataDay = {
+                labels: ['00:00','04:00','08:00','12:00','16:00','20:00'],
+                values: [180000,250000,420000,580000,610000,390000]
+            };
+            const days15 = Array.from({length:15}, (_,i)=>(i+1).toString());
+            const values15 = [
+                18500000,19200000,17800000,19500000,20100000,
+                19800000,20500000,21000000,20700000,21500000,
+                22000000,21800000,22500000,23000000,22800000
+            ];
+
+            ingresosChart = new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: days15,
+                    datasets: [{
+                        label: 'Ingresos (Bs.)',
+                        data: values15,
+                        borderColor: getComputedStyle(document.documentElement).getPropertyValue('--azul-medio').trim(),
+                        backgroundColor: 'rgba(46,121,186,0.1)',
+                        borderWidth: 3,
+                        pointBackgroundColor: getComputedStyle(document.documentElement).getPropertyValue('--azul-oscuro').trim(),
+                        pointBorderColor: '#fff',
+                        pointBorderWidth: 2,
+                        pointRadius: 4,
+                        pointHoverRadius: 7,
+                        tension: 0.3,
+                        fill: true
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        tooltip: { callbacks: { label: (ctx)=> ctx.dataset.label + ': Bs. ' + ctx.parsed.y.toLocaleString('es-VE') } },
+                        legend: { display: false }
+                    },
+                    scales: { y: { beginAtZero: false, ticks: { callback: v=>'Bs. '+v.toLocaleString('es-VE') } } }
+                }
+            });
+
+            document.getElementById('filterDay').addEventListener('click', ()=>{
+                document.getElementById('filterDay').classList.add('active');
+                document.getElementById('filterMonth').classList.remove('active');
+                ingresosChart.data.labels = dataDay.labels;
+                ingresosChart.data.datasets[0].data = dataDay.values;
+                ingresosChart.update();
+            });
+            document.getElementById('filterMonth').addEventListener('click', ()=>{
+                document.getElementById('filterMonth').classList.add('active');
+                document.getElementById('filterDay').classList.remove('active');
+                ingresosChart.data.labels = days15;
+                ingresosChart.data.datasets[0].data = values15;
+                ingresosChart.update();
+            });
+        }
+
+        // ---------- EMPRESAS ----------
+        window.editarEmpresa = function(nombre) {
+            if (nombre === 'Hidrocapital') {
+                document.getElementById('nombreEmpresa').value = 'Hidrocapital';
+                document.getElementById('razonSocial').value = 'Hidrocapital C.A.';
+                document.getElementById('tipoDocumentoEmpresa').value = 'J';
+                document.getElementById('numeroDocumentoEmpresa').value = '000123456';
+                document.getElementById('telefonoEmpresa').value = '02121234567';
+                document.getElementById('correoEmpresa').value = 'contacto@hidrocapital.com';
+                document.getElementById('direccionEmpresa').value = 'Av. Principal, Caracas';
+                document.getElementById('estadoEmpresaSelect').value = 'Activo';
+                
+                // Preseleccionar clientes asociados
+                const selectClientes = document.getElementById('clientesAsociadosEmpresa');
+                Array.from(selectClientes.options).forEach(opt => {
+                    if (opt.value === 'Sambil Chacao' || opt.value === 'Empresas Polar') {
+                        opt.selected = true;
+                    } else {
+                        opt.selected = false;
+                    }
+                });
+                
+                document.getElementById('btnGuardarEmpresa').innerHTML = '<i class="fas fa-save"></i> Actualizar';
+                document.getElementById('tablaEmpresasContainer').style.display = 'none';
+                document.getElementById('formularioEmpresaContainer').style.display = 'block';
+            } else {
+                alert('Ver detalles de ' + nombre);
+            }
+        };
+
+        window.cambiarPaginaEmpresas = function(pagina) {
+            const pagButtons = document.querySelectorAll('#empresas .pagination button:not(.arrow)');
+            pagButtons.forEach(btn => btn.classList.remove('active'));
+            if (pagina === 'prev') {
+                let active = document.querySelector('#empresas .pagination button.active');
+                if (active) {
+                    let prev = active.previousElementSibling;
+                    if (prev && prev.tagName === 'BUTTON' && !prev.classList.contains('arrow')) {
+                        prev.classList.add('active');
+                        active.classList.remove('active');
+                    }
+                }
+            } else if (pagina === 'next') {
+                let active = document.querySelector('#empresas .pagination button.active');
+                if (active) {
+                    let next = active.nextElementSibling;
+                    if (next && next.tagName === 'BUTTON' && !next.classList.contains('arrow')) {
+                        next.classList.add('active');
+                        active.classList.remove('active');
+                    }
+                }
+            } else {
+                if (pagButtons[pagina-1]) pagButtons[pagina-1].classList.add('active');
+            }
+        };
+
+        // ---------- CLIENTES ----------
+        window.editarCliente = function(nombre) {
+            if (nombre === 'Sambil Chacao') {
+                document.getElementById('nombreCliente').value = 'Sambil Chacao';
+                document.getElementById('razonSocialCliente').value = 'Sambil Chacao C.A.';
+                document.getElementById('tipoDocumentoCliente').value = 'J';
+                document.getElementById('numeroDocumentoCliente').value = '123456789';
+                document.getElementById('correoCliente').value = 'contacto@sambilchacao.com';
+                document.getElementById('empresaCliente').value = 'Hidrocapital';
+                document.getElementById('estadoClienteDir').value = 'Miranda';
+                document.getElementById('municipioCliente').value = 'Chacao';
+                document.getElementById('direccionCliente').value = 'Av. Francisco de Miranda, CC Sambil';
+                document.getElementById('repNombreCliente').value = 'Juan Pérez';
+                document.getElementById('repTipoDocumentoCliente').value = 'V';
+                document.getElementById('repDocumentoCliente').value = '12345678';
+                document.getElementById('repTelefonoCliente').value = '04121234567';
+                document.getElementById('repCorreoCliente').value = 'juan.perez@sambilchacao.com';
+                document.getElementById('btnGuardarCliente').innerHTML = '<i class="fas fa-save"></i> Actualizar';
+                document.getElementById('tablaClientesContainer').style.display = 'none';
+                document.getElementById('formularioClienteContainer').style.display = 'block';
+            } else {
+                alert('Ver detalles de ' + nombre);
+            }
+        };
+
+        window.cambiarPaginaClientes = function(pagina) {
+            const pagButtons = document.querySelectorAll('#clientes .pagination button:not(.arrow)');
+            pagButtons.forEach(btn => btn.classList.remove('active'));
+            if (pagina === 'prev') {
+                let active = document.querySelector('#clientes .pagination button.active');
+                if (active) {
+                    let prev = active.previousElementSibling;
+                    if (prev && prev.tagName === 'BUTTON' && !prev.classList.contains('arrow')) {
+                        prev.classList.add('active');
+                        active.classList.remove('active');
+                    }
+                }
+            } else if (pagina === 'next') {
+                let active = document.querySelector('#clientes .pagination button.active');
+                if (active) {
+                    let next = active.nextElementSibling;
+                    if (next && next.tagName === 'BUTTON' && !next.classList.contains('arrow')) {
+                        next.classList.add('active');
+                        active.classList.remove('active');
+                    }
+                }
+            } else {
+                if (pagButtons[pagina-1]) pagButtons[pagina-1].classList.add('active');
+            }
+        };
+
+        // ---------- EMPLEADOS ----------
+        window.editarEmpleado = function(usuario) {
+            if (usuario === 'mgonzalez') {
+                document.getElementById('nombreApellidoEmpleado').value = 'María González';
+                document.getElementById('usuarioEmpleado').value = 'mgonzalez';
+                document.getElementById('tipoDocumentoEmpleado').value = 'V';
+                document.getElementById('documentoEmpleado').value = '12345678';
+                document.getElementById('empresaEmpleado').value = 'Hidrocapital';
+                document.getElementById('correoEmpleado').value = 'maria.gonzalez@hidroven.com';
+                document.getElementById('usuarioSistemaEmpleado').value = 'mgonzalez';
+                document.getElementById('rolEmpleado').value = 'Administrador';
+                document.getElementById('estadoEmpleado').value = 'Activo';
+                document.getElementById('btnGuardarEmpleado').innerHTML = '<i class="fas fa-save"></i> Actualizar';
+                document.getElementById('tablaEmpleadosContainer').style.display = 'none';
+                document.getElementById('formularioEmpleadoContainer').style.display = 'block';
+            } else {
+                alert('Ver detalles de ' + usuario);
+            }
+        };
+
+        window.cambiarPaginaEmpleados = function(pagina) {
+            const pagButtons = document.querySelectorAll('#empleados .pagination button:not(.arrow)');
+            pagButtons.forEach(btn => btn.classList.remove('active'));
+            if (pagina === 'prev') {
+                let active = document.querySelector('#empleados .pagination button.active');
+                if (active) {
+                    let prev = active.previousElementSibling;
+                    if (prev && prev.tagName === 'BUTTON' && !prev.classList.contains('arrow')) {
+                        prev.classList.add('active');
+                        active.classList.remove('active');
+                    }
+                }
+            } else if (pagina === 'next') {
+                let active = document.querySelector('#empleados .pagination button.active');
+                if (active) {
+                    let next = active.nextElementSibling;
+                    if (next && next.tagName === 'BUTTON' && !next.classList.contains('arrow')) {
+                        next.classList.add('active');
+                        active.classList.remove('active');
+                    }
+                }
+            } else {
+                if (pagButtons[pagina-1]) pagButtons[pagina-1].classList.add('active');
+            }
+        };
+
+        // ---------- DISPOSITIVOS ----------
+        window.editarDispositivo = function(cliente) {
+            if (cliente === 'Sambil Chacao') {
+                document.getElementById('clienteDispositivo').value = 'Sambil Chacao';
+                document.getElementById('empresaDispositivo').value = 'Hidrocapital';
+                document.getElementById('medidoresDispositivo').value = 32;
+                document.getElementById('sensoresDispositivo').value = 8;
+                document.getElementById('telemetriaDispositivo').value = 4;
+                document.getElementById('totalDispositivo').value = 44;
+                document.getElementById('estadoDispositivo').value = '96% Operativo';
+                document.getElementById('ultimoMantenimientoDispositivo').value = '15/01/2026';
+                document.getElementById('btnGuardarDispositivo').innerHTML = '<i class="fas fa-save"></i> Actualizar';
+                document.getElementById('tablaDispositivosContainer').style.display = 'none';
+                document.getElementById('formularioDispositivoContainer').style.display = 'block';
+            } else {
+                alert('Ver detalles de ' + cliente);
+            }
+        };
+
+        window.cambiarPaginaDispositivos = function(pagina) {
+            const pagButtons = document.querySelectorAll('#dispositivos .pagination button:not(.arrow)');
+            pagButtons.forEach(btn => btn.classList.remove('active'));
+            if (pagina === 'prev') {
+                let active = document.querySelector('#dispositivos .pagination button.active');
+                if (active) {
+                    let prev = active.previousElementSibling;
+                    if (prev && prev.tagName === 'BUTTON' && !prev.classList.contains('arrow')) {
+                        prev.classList.add('active');
+                        active.classList.remove('active');
+                    }
+                }
+            } else if (pagina === 'next') {
+                let active = document.querySelector('#dispositivos .pagination button.active');
+                if (active) {
+                    let next = active.nextElementSibling;
+                    if (next && next.tagName === 'BUTTON' && !next.classList.contains('arrow')) {
+                        next.classList.add('active');
+                        active.classList.remove('active');
+                    }
+                }
+            } else {
+                if (pagButtons[pagina-1]) pagButtons[pagina-1].classList.add('active');
+            }
+        };
+
+        // ---------- INICIALIZACIÓN DE EVENTOS ----------
+        document.addEventListener('DOMContentLoaded', function() {
+            const today = getTodayDate();
+            const morososFecha = document.getElementById('morososFecha');
+            if (morososFecha) morososFecha.innerText = `Actualizado: ${today}`;
+            const cobranzasFecha = document.getElementById('cobranzasFecha');
+            if (cobranzasFecha) cobranzasFecha.innerText = `Actualizado: ${today}`;
+
+            document.querySelectorAll('.menu-item').forEach(item => {
+                item.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    const moduleId = this.getAttribute('data-module');
+                    changeModule(moduleId);
+                });
+            });
+
+            document.getElementById('menuToggle').addEventListener('click', toggleSidebar);
+            function handleMobile() {
+                const sidebar = document.getElementById('sidebar');
+                const toggle = document.getElementById('menuToggle');
+                if (window.innerWidth <= 768) {
+                    toggle.removeEventListener('click', toggleSidebar);
+                    toggle.addEventListener('click', () => sidebar.classList.toggle('open'));
+                } else {
+                    toggle.removeEventListener('click', () => {});
+                    toggle.addEventListener('click', toggleSidebar);
+                }
+            }
+            handleMobile();
+            window.addEventListener('resize', handleMobile);
+
+            initDarkMode();
+            initProfileDropdown();
+            initChart();
+
+            // ---------- EMPRESAS ----------
+            const btnFiltroEmp = document.getElementById('btnFiltroEmpresas');
+            const buscadorEmp = document.getElementById('buscadorEmpresas');
+            if (btnFiltroEmp) {
+                btnFiltroEmp.addEventListener('click', () => {
+                    buscadorEmp.style.display = buscadorEmp.style.display === 'none' ? 'flex' : 'none';
+                });
+            }
+            const searchInputEmp = document.getElementById('searchInputEmpresas');
+            if (searchInputEmp) {
+                searchInputEmp.addEventListener('keyup', function() {
+                    const filter = this.value.toLowerCase();
+                    const table = document.getElementById('tablaEmpresas');
+                    const rows = table.getElementsByTagName('tr');
+                    for (let i = 1; i < rows.length; i++) {
+                        const rifCell = rows[i].getElementsByTagName('td')[0];
+                        const nombreCell = rows[i].getElementsByTagName('td')[1];
+                        if (rifCell && nombreCell) {
+                            const rif = rifCell.textContent || rifCell.innerText;
+                            const nombre = nombreCell.textContent || nombreCell.innerText;
+                            if (rif.toLowerCase().indexOf(filter) > -1 || nombre.toLowerCase().indexOf(filter) > -1) {
+                                rows[i].style.display = '';
+                            } else {
+                                rows[i].style.display = 'none';
+                            }
+                        }
+                    }
+                    const visibleRows = Array.from(rows).slice(1).filter(row => row.style.display !== 'none').length;
+                    document.getElementById('mostrandoEmpresas').innerText = `Mostrando ${visibleRows} empresas`;
+                });
+            }
+            const btnLimpiarEmp = document.getElementById('btnLimpiarFiltroEmpresas');
+            if (btnLimpiarEmp) {
+                btnLimpiarEmp.addEventListener('click', function() {
+                    if (searchInputEmp) searchInputEmp.value = '';
+                    searchInputEmp.dispatchEvent(new Event('keyup'));
+                });
+            }
+            const btnCrearEmp = document.getElementById('btnCrearEmpresa');
+            const tablaEmpContainer = document.getElementById('tablaEmpresasContainer');
+            const formEmpContainer = document.getElementById('formularioEmpresaContainer');
+            if (btnCrearEmp) {
+                btnCrearEmp.addEventListener('click', function() {
+                    document.getElementById('empresaForm').reset();
+                    // Limpiar selección de clientes
+                    const selectClientes = document.getElementById('clientesAsociadosEmpresa');
+                    Array.from(selectClientes.options).forEach(opt => opt.selected = false);
+                    document.getElementById('btnGuardarEmpresa').innerHTML = '<i class="fas fa-save"></i> Crear';
+                    tablaEmpContainer.style.display = 'none';
+                    formEmpContainer.style.display = 'block';
+                });
+            }
+            const btnRegresarEmp = document.getElementById('btnRegresarEmpresa');
+            if (btnRegresarEmp) {
+                btnRegresarEmp.addEventListener('click', function() {
+                    formEmpContainer.style.display = 'none';
+                    tablaEmpContainer.style.display = 'block';
+                    if (searchInputEmp) {
+                        searchInputEmp.value = '';
+                        searchInputEmp.dispatchEvent(new Event('keyup'));
+                    }
+                });
+            }
+            const formEmp = document.getElementById('empresaForm');
+            if (formEmp) {
+                formEmp.addEventListener('submit', function(e) {
+                    e.preventDefault();
+                    alert('Empresa guardada (simulación)');
+                    formEmpContainer.style.display = 'none';
+                    tablaEmpContainer.style.display = 'block';
+                    if (searchInputEmp) {
+                        searchInputEmp.value = '';
+                        searchInputEmp.dispatchEvent(new Event('keyup'));
+                    }
+                });
+            }
+
+            // ---------- CLIENTES ----------
+            const btnFiltroCli = document.getElementById('btnFiltroClientes');
+            const buscadorCli = document.getElementById('buscadorClientes');
+            if (btnFiltroCli) {
+                btnFiltroCli.addEventListener('click', () => {
+                    buscadorCli.style.display = buscadorCli.style.display === 'none' ? 'flex' : 'none';
+                });
+            }
+            const searchInputCli = document.getElementById('searchInputClientes');
+            if (searchInputCli) {
+                searchInputCli.addEventListener('keyup', function() {
+                    const filter = this.value.toLowerCase();
+                    const table = document.getElementById('tablaClientes');
+                    const rows = table.getElementsByTagName('tr');
+                    for (let i = 1; i < rows.length; i++) {
+                        const docCell = rows[i].getElementsByTagName('td')[0];
+                        const nombreCell = rows[i].getElementsByTagName('td')[1];
+                        const empresaCell = rows[i].getElementsByTagName('td')[2];
+                        if (docCell && nombreCell && empresaCell) {
+                            const doc = docCell.textContent || docCell.innerText;
+                            const nombre = nombreCell.textContent || nombreCell.innerText;
+                            const empresa = empresaCell.textContent || empresaCell.innerText;
+                            if (doc.toLowerCase().indexOf(filter) > -1 || nombre.toLowerCase().indexOf(filter) > -1 || empresa.toLowerCase().indexOf(filter) > -1) {
+                                rows[i].style.display = '';
+                            } else {
+                                rows[i].style.display = 'none';
+                            }
+                        }
+                    }
+                    const visibleRows = Array.from(rows).slice(1).filter(row => row.style.display !== 'none').length;
+                    document.getElementById('mostrandoClientes').innerText = `Mostrando ${visibleRows} clientes`;
+                });
+            }
+            const btnLimpiarCli = document.getElementById('btnLimpiarFiltroClientes');
+            if (btnLimpiarCli) {
+                btnLimpiarCli.addEventListener('click', function() {
+                    if (searchInputCli) searchInputCli.value = '';
+                    searchInputCli.dispatchEvent(new Event('keyup'));
+                });
+            }
+            const btnCrearCli = document.getElementById('btnCrearCliente');
+            const tablaCliContainer = document.getElementById('tablaClientesContainer');
+            const formCliContainer = document.getElementById('formularioClienteContainer');
+            if (btnCrearCli) {
+                btnCrearCli.addEventListener('click', function() {
+                    document.getElementById('clienteForm').reset();
+                    document.getElementById('btnGuardarCliente').innerHTML = '<i class="fas fa-save"></i> Guardar';
+                    tablaCliContainer.style.display = 'none';
+                    formCliContainer.style.display = 'block';
+                });
+            }
+            const btnRegresarCli = document.getElementById('btnRegresarCliente');
+            if (btnRegresarCli) {
+                btnRegresarCli.addEventListener('click', function() {
+                    formCliContainer.style.display = 'none';
+                    tablaCliContainer.style.display = 'block';
+                    if (searchInputCli) {
+                        searchInputCli.value = '';
+                        searchInputCli.dispatchEvent(new Event('keyup'));
+                    }
+                });
+            }
+            const formCli = document.getElementById('clienteForm');
+            if (formCli) {
+                formCli.addEventListener('submit', function(e) {
+                    e.preventDefault();
+                    alert('Cliente guardado (simulación)');
+                    formCliContainer.style.display = 'none';
+                    tablaCliContainer.style.display = 'block';
+                    if (searchInputCli) {
+                        searchInputCli.value = '';
+                        searchInputCli.dispatchEvent(new Event('keyup'));
+                    }
+                });
+            }
+
+            // ---------- EMPLEADOS ----------
+            const btnFiltroEmpld = document.getElementById('btnFiltroEmpleados');
+            const buscadorEmpld = document.getElementById('buscadorEmpleados');
+            if (btnFiltroEmpld) {
+                btnFiltroEmpld.addEventListener('click', () => {
+                    buscadorEmpld.style.display = buscadorEmpld.style.display === 'none' ? 'flex' : 'none';
+                });
+            }
+            const searchInputEmpld = document.getElementById('searchInputEmpleados');
+            if (searchInputEmpld) {
+                searchInputEmpld.addEventListener('keyup', function() {
+                    const filter = this.value.toLowerCase();
+                    const table = document.getElementById('tablaEmpleados');
+                    const rows = table.getElementsByTagName('tr');
+                    for (let i = 1; i < rows.length; i++) {
+                        const usuarioCell = rows[i].getElementsByTagName('td')[0];
+                        const nombreCell = rows[i].getElementsByTagName('td')[1];
+                        const empresaCell = rows[i].getElementsByTagName('td')[2];
+                        if (usuarioCell && nombreCell && empresaCell) {
+                            const usuario = usuarioCell.textContent || usuarioCell.innerText;
+                            const nombre = nombreCell.textContent || nombreCell.innerText;
+                            const empresa = empresaCell.textContent || empresaCell.innerText;
+                            if (usuario.toLowerCase().indexOf(filter) > -1 || nombre.toLowerCase().indexOf(filter) > -1 || empresa.toLowerCase().indexOf(filter) > -1) {
+                                rows[i].style.display = '';
+                            } else {
+                                rows[i].style.display = 'none';
+                            }
+                        }
+                    }
+                    const visibleRows = Array.from(rows).slice(1).filter(row => row.style.display !== 'none').length;
+                    document.getElementById('mostrandoEmpleados').innerText = `Mostrando ${visibleRows} empleados`;
+                });
+            }
+            const btnLimpiarEmpld = document.getElementById('btnLimpiarFiltroEmpleados');
+            if (btnLimpiarEmpld) {
+                btnLimpiarEmpld.addEventListener('click', function() {
+                    if (searchInputEmpld) searchInputEmpld.value = '';
+                    searchInputEmpld.dispatchEvent(new Event('keyup'));
+                });
+            }
+            const btnCrearEmpld = document.getElementById('btnCrearEmpleado');
+            const tablaEmpldContainer = document.getElementById('tablaEmpleadosContainer');
+            const formEmpldContainer = document.getElementById('formularioEmpleadoContainer');
+            if (btnCrearEmpld) {
+                btnCrearEmpld.addEventListener('click', function() {
+                    document.getElementById('empleadoForm').reset();
+                    document.getElementById('btnGuardarEmpleado').innerHTML = '<i class="fas fa-save"></i> Guardar';
+                    tablaEmpldContainer.style.display = 'none';
+                    formEmpldContainer.style.display = 'block';
+                });
+            }
+            const btnRegresarEmpld = document.getElementById('btnRegresarEmpleado');
+            if (btnRegresarEmpld) {
+                btnRegresarEmpld.addEventListener('click', function() {
+                    formEmpldContainer.style.display = 'none';
+                    tablaEmpldContainer.style.display = 'block';
+                    if (searchInputEmpld) {
+                        searchInputEmpld.value = '';
+                        searchInputEmpld.dispatchEvent(new Event('keyup'));
+                    }
+                });
+            }
+            const formEmpld = document.getElementById('empleadoForm');
+            if (formEmpld) {
+                formEmpld.addEventListener('submit', function(e) {
+                    e.preventDefault();
+                    alert('Empleado guardado (simulación)');
+                    formEmpldContainer.style.display = 'none';
+                    tablaEmpldContainer.style.display = 'block';
+                    if (searchInputEmpld) {
+                        searchInputEmpld.value = '';
+                        searchInputEmpld.dispatchEvent(new Event('keyup'));
+                    }
+                });
+            }
+
+            // ---------- DISPOSITIVOS ----------
+            const btnFiltroDis = document.getElementById('btnFiltroDispositivos');
+            const buscadorDis = document.getElementById('buscadorDispositivos');
+            if (btnFiltroDis) {
+                btnFiltroDis.addEventListener('click', () => {
+                    buscadorDis.style.display = buscadorDis.style.display === 'none' ? 'flex' : 'none';
+                });
+            }
+            const searchInputDis = document.getElementById('searchInputDispositivos');
+            if (searchInputDis) {
+                searchInputDis.addEventListener('keyup', function() {
+                    const filter = this.value.toLowerCase();
+                    const table = document.getElementById('tablaDispositivos');
+                    const rows = table.getElementsByTagName('tr');
+                    for (let i = 1; i < rows.length; i++) {
+                        const clienteCell = rows[i].getElementsByTagName('td')[0];
+                        const empresaCell = rows[i].getElementsByTagName('td')[1];
+                        if (clienteCell && empresaCell) {
+                            const cliente = clienteCell.textContent || clienteCell.innerText;
+                            const empresa = empresaCell.textContent || empresaCell.innerText;
+                            if (cliente.toLowerCase().indexOf(filter) > -1 || empresa.toLowerCase().indexOf(filter) > -1) {
+                                rows[i].style.display = '';
+                            } else {
+                                rows[i].style.display = 'none';
+                            }
+                        }
+                    }
+                    const visibleRows = Array.from(rows).slice(1).filter(row => row.style.display !== 'none').length;
+                    document.getElementById('mostrandoDispositivos').innerText = `Mostrando ${visibleRows} dispositivos`;
+                });
+            }
+            const btnLimpiarDis = document.getElementById('btnLimpiarFiltroDispositivos');
+            if (btnLimpiarDis) {
+                btnLimpiarDis.addEventListener('click', function() {
+                    if (searchInputDis) searchInputDis.value = '';
+                    searchInputDis.dispatchEvent(new Event('keyup'));
+                });
+            }
+            const btnCrearDis = document.getElementById('btnCrearDispositivo');
+            const tablaDisContainer = document.getElementById('tablaDispositivosContainer');
+            const formDisContainer = document.getElementById('formularioDispositivoContainer');
+            if (btnCrearDis) {
+                btnCrearDis.addEventListener('click', function() {
+                    document.getElementById('dispositivoForm').reset();
+                    document.getElementById('btnGuardarDispositivo').innerHTML = '<i class="fas fa-save"></i> Guardar';
+                    tablaDisContainer.style.display = 'none';
+                    formDisContainer.style.display = 'block';
+                });
+            }
+            const btnRegresarDis = document.getElementById('btnRegresarDispositivo');
+            if (btnRegresarDis) {
+                btnRegresarDis.addEventListener('click', function() {
+                    formDisContainer.style.display = 'none';
+                    tablaDisContainer.style.display = 'block';
+                    if (searchInputDis) {
+                        searchInputDis.value = '';
+                        searchInputDis.dispatchEvent(new Event('keyup'));
+                    }
+                });
+            }
+            const formDis = document.getElementById('dispositivoForm');
+            if (formDis) {
+                const medidores = document.getElementById('medidoresDispositivo');
+                const sensores = document.getElementById('sensoresDispositivo');
+                const telemetria = document.getElementById('telemetriaDispositivo');
+                const total = document.getElementById('totalDispositivo');
+                const calcularTotal = () => {
+                    const m = parseInt(medidores.value) || 0;
+                    const s = parseInt(sensores.value) || 0;
+                    const t = parseInt(telemetria.value) || 0;
+                    total.value = m + s + t;
+                };
+                medidores.addEventListener('input', calcularTotal);
+                sensores.addEventListener('input', calcularTotal);
+                telemetria.addEventListener('input', calcularTotal);
+                
+                formDis.addEventListener('submit', function(e) {
+                    e.preventDefault();
+                    alert('Dispositivo guardado (simulación)');
+                    formDisContainer.style.display = 'none';
+                    tablaDisContainer.style.display = 'block';
+                    if (searchInputDis) {
+                        searchInputDis.value = '';
+                        searchInputDis.dispatchEvent(new Event('keyup'));
+                    }
+                });
+            }
+
+            // Ocultar todos los buscadores al inicio
+            const allSearchBars = document.querySelectorAll('.search-bar');
+            allSearchBars.forEach(sb => sb.style.display = 'none');
+        });
+    </script>
+</body>
+</html>
