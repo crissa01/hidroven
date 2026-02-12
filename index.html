@@ -34,6 +34,10 @@
             --sidebar-bg: white;
             --stat-label-color: #000000;
             --modal-overlay: rgba(0,0,0,0.5);
+            /* Colores de tabla - AZUL CLARITO */
+            --table-header-bg: #e3f0ff;
+            --subtotal-bg: #d1e5ff;
+            --total-bg: #b8d6ff;
         }
 
         body.dark-mode {
@@ -49,6 +53,9 @@
             --sidebar-bg: #252525;
             --stat-label-color: #ffffff;
             --modal-overlay: rgba(0,0,0,0.7);
+            --table-header-bg: #2a3a4a;
+            --subtotal-bg: #2a4a6a;
+            --total-bg: #2a5a7a;
         }
 
         body {
@@ -308,6 +315,61 @@
             opacity: 0;
             width: 0;
             overflow: hidden;
+        }
+
+        /* SUBMENÚ */
+        .has-submenu {
+            position: relative;
+        }
+        .submenu {
+            list-style: none;
+            padding-left: 20px;
+            margin-top: 5px;
+            margin-bottom: 5px;
+            display: none;
+        }
+        .submenu.open {
+            display: block;
+        }
+        .submenu-item {
+            margin: 5px 0;
+        }
+        .submenu-link {
+            display: flex;
+            align-items: center;
+            padding: 10px 20px;
+            color: var(--text-primary);
+            text-decoration: none;
+            gap: 12px;
+            border-radius: 8px;
+            font-size: 14px;
+            transition: 0.2s;
+        }
+        .submenu-link:hover {
+            background-color: rgba(46,121,186,0.08);
+            color: var(--azul-medio);
+        }
+        .submenu-item.active .submenu-link {
+            background-color: rgba(0,56,118,0.1);
+            color: var(--azul-oscuro);
+            font-weight: 600;
+        }
+        .sidebar.collapsed .submenu {
+            display: none !important;
+        }
+        .menu-arrow {
+            margin-left: auto;
+            transition: transform 0.3s;
+        }
+        .menu-arrow.open {
+            transform: rotate(90deg);
+        }
+        .submenu-link i {
+            display: none;
+        }
+        .submenu-link span:before {
+            content: "- ";
+            margin-right: 5px;
         }
 
         .content {
@@ -625,7 +687,6 @@
             opacity: 0.7;
             cursor: not-allowed;
         }
-        /* Campo con icono de visibilidad */
         .password-wrapper {
             position: relative;
             display: flex;
@@ -658,7 +719,6 @@
             margin-top: 20px;
         }
 
-        /* LISTA DE CLIENTES ASOCIADOS */
         .clientes-lista {
             margin-top: 5px;
             padding: 10px 12px;
@@ -688,7 +748,6 @@
             color: var(--azul-oscuro);
         }
 
-        /* SEPARADOR ENTRE SECCIONES DEL FORMULARIO */
         .section-spacer {
             margin-top: 25px;
         }
@@ -725,6 +784,7 @@
             height: 100% !important;
         }
 
+        /* ========== ESTILOS DE TABLAS - AZUL CLARITO ========== */
         .table-container {
             background-color: var(--bg-card);
             border-radius: 10px;
@@ -756,14 +816,10 @@
         th {
             text-align: left;
             padding: 16px 20px;
-            background-color: #f8f9fa;
+            background-color: var(--table-header-bg);
             color: var(--azul-oscuro);
             font-weight: 600;
             border-bottom: 1px solid var(--border-color);
-        }
-
-        body.dark-mode th {
-            background-color: #2d2d2d;
         }
 
         td {
@@ -781,6 +837,15 @@
 
         body.dark-mode tr:hover td {
             background-color: #2a2a2a;
+        }
+
+        .subtotal-row td {
+            background-color: var(--subtotal-bg) !important;
+            font-weight: 600;
+        }
+        .total-row td {
+            background-color: var(--total-bg) !important;
+            font-weight: 700;
         }
 
         .badge {
@@ -876,7 +941,7 @@
             padding: 5px;
         }
 
-        /* MODAL DE CONFIRMACIÓN (cierre sesión) */
+        /* MODALES */
         .modal-overlay {
             position: fixed;
             top: 0;
@@ -927,7 +992,6 @@
             gap: 15px;
         }
 
-        /* Botón de cierre (X) para modales */
         .modal-close {
             position: absolute;
             top: 15px;
@@ -944,7 +1008,6 @@
             color: var(--danger-color);
         }
 
-        /* MODAL OTP */
         .modal.otp-modal {
             text-align: center;
         }
@@ -1031,6 +1094,9 @@
                 width: 95%;
                 padding: 20px;
             }
+            .submenu {
+                padding-left: 10px;
+            }
         }
 
         .module-content {
@@ -1044,6 +1110,13 @@
         }
 
         .module-content.active {
+            display: block;
+        }
+
+        .submodule {
+            display: none;
+        }
+        .submodule.active {
             display: block;
         }
 
@@ -1136,7 +1209,7 @@
     <div class="main-container">
         <nav class="sidebar" id="sidebar">
             <ul class="menu">
-                <li class="menu-item active" data-module="dashboard">
+                <li class="menu-item" data-module="dashboard">
                     <a href="#" class="menu-link">
                         <i class="menu-icon fas fa-home"></i>
                         <span class="menu-text">Dashboard</span>
@@ -1166,18 +1239,40 @@
                         <span class="menu-text">Dispositivos</span>
                     </a>
                 </li>
-                <li class="menu-item" data-module="reportes">
-                    <a href="#" class="menu-link">
+                <!-- Módulo Reportes con submenú -->
+                <li class="menu-item has-submenu" data-module="reportes">
+                    <a href="#" class="menu-link" id="reportesParentLink">
                         <i class="menu-icon fas fa-chart-bar"></i>
                         <span class="menu-text">Reportes</span>
+                        <i class="fas fa-chevron-right menu-arrow" id="reportesArrow"></i>
                     </a>
+                    <ul class="submenu" id="reportesSubmenu">
+                        <li class="submenu-item active" data-submodule="cobranzas">
+                            <a href="#" class="submenu-link">
+                                <i class="fas fa-money-bill-wave" style="display: none;"></i>
+                                <span>Reporte de Cobranzas</span>
+                            </a>
+                        </li>
+                        <li class="submenu-item" data-submodule="deudas">
+                            <a href="#" class="submenu-link">
+                                <i class="fas fa-file-invoice-dollar" style="display: none;"></i>
+                                <span>Reporte de Deudas</span>
+                            </a>
+                        </li>
+                        <li class="submenu-item" data-submodule="clientes">
+                            <a href="#" class="submenu-link">
+                                <i class="fas fa-user-tie" style="display: none;"></i>
+                                <span>Reporte de Clientes</span>
+                            </a>
+                        </li>
+                    </ul>
                 </li>
             </ul>
         </nav>
 
         <main class="content">
             <!-- DASHBOARD -->
-            <div id="dashboard" class="module-content active">
+            <div id="dashboard" class="module-content">
                 <div class="page-header">
                     <div class="page-title-section">
                         <h1 class="page-title">Dashboard</h1>
@@ -1333,7 +1428,7 @@
                 </div>
             </div>
 
-            <!-- MÓDULO EMPRESAS (con clase header-buttons) -->
+            <!-- MÓDULO EMPRESAS -->
             <div id="empresas" class="module-content">
                 <div class="page-header">
                     <div class="page-title-section">
@@ -1466,7 +1561,7 @@
                 </div>
             </div>
 
-            <!-- MÓDULO CLIENTES (con clase header-buttons) -->
+            <!-- MÓDULO CLIENTES -->
             <div id="clientes" class="module-content">
                 <div class="page-header">
                     <div class="page-title-section">
@@ -1653,7 +1748,7 @@
                 </div>
             </div>
 
-            <!-- MÓDULO EMPLEADOS (con clase header-buttons) -->
+            <!-- MÓDULO EMPLEADOS -->
             <div id="empleados" class="module-content">
                 <div class="page-header">
                     <div class="page-title-section">
@@ -1827,7 +1922,7 @@
                 </div>
             </div>
 
-            <!-- MÓDULO DISPOSITIVOS (con clase header-buttons) -->
+            <!-- MÓDULO DISPOSITIVOS -->
             <div id="dispositivos" class="module-content">
                 <div class="page-header">
                     <div class="page-title-section">
@@ -1947,15 +2042,246 @@
                 </div>
             </div>
 
-            <!-- MÓDULO REPORTES - VACÍO -->
+            <!-- ========== MÓDULO REPORTES ========== -->
             <div id="reportes" class="module-content">
-                <div class="page-header">
-                    <div class="page-title-section">
-                        <h1 class="page-title">Reportes Financieros</h1>
-                        <p class="page-description">Informes de cobranzas, deudas y gestión de clientes.</p>
+                <!-- SUBMÓDULO: Reporte de Cobranzas -->
+                <div id="reporte-cobranzas" class="submodule active">
+                    <div class="page-header">
+                        <div class="page-title-section">
+                            <h1 class="page-title">Reporte de Cobranzas</h1>
+                            <p class="page-description">Reporte que refleja el cobro realizado por método de pago y recaudador</p>
+                        </div>
+                        <div style="display: flex; gap: 10px;">
+                            <button class="btn btn-primary" onclick="alert('Descargar Excel - Reporte de Cobranzas (simulación)')"><i class="fas fa-file-excel"></i> Descargar Excel</button>
+                            <button class="btn btn-primary" onclick="alert('Descargar PDF - Reporte de Cobranzas (simulación)')"><i class="fas fa-file-pdf"></i> Descargar PDF</button>
+                        </div>
+                    </div>
+                    
+                    <div class="table-container">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>Fecha</th>
+                                    <th>Cliente</th>
+                                    <th>Empresa</th>
+                                    <th>Recaudador</th>
+                                    <th>Método de Pago</th>
+                                    <th>Monto (Bs.)</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <!-- Cobros de Enero -->
+                                <tr>
+                                    <td>15/01/2026</td>
+                                    <td>Proactiva Libertador C.A.</td>
+                                    <td>Hidrocentro</td>
+                                    <td>María González</td>
+                                    <td>Transferencia</td>
+                                    <td>3.250.000</td>
+                                </tr>
+                                <tr>
+                                    <td>20/01/2026</td>
+                                    <td>Empresas Polar</td>
+                                    <td>Hidrocapital</td>
+                                    <td>José Martínez</td>
+                                    <td>Pago móvil</td>
+                                    <td>2.500.000</td>
+                                </tr>
+                                <tr>
+                                    <td>25/01/2026</td>
+                                    <td>Sambil Chacao</td>
+                                    <td>Hidrocapital</td>
+                                    <td>Carlos Pérez</td>
+                                    <td>Efectivo</td>
+                                    <td>1.800.000</td>
+                                </tr>
+                                <!-- Subtotal Enero -->
+                                <tr class="subtotal-row">
+                                    <td colspan="5" style="text-align: right; font-weight: 600;">Subtotal</td>
+                                    <td>7.550.000</td>
+                                </tr>
+                                <!-- Cobros de Febrero -->
+                                <tr>
+                                    <td>02/02/2026</td>
+                                    <td>Sambil Chacao</td>
+                                    <td>Hidrocapital</td>
+                                    <td>Carlos Pérez</td>
+                                    <td>Efectivo</td>
+                                    <td>1.500.000</td>
+                                </tr>
+                                <tr>
+                                    <td>05/02/2026</td>
+                                    <td>Asotrave</td>
+                                    <td>Hidrocaribe</td>
+                                    <td>Ana Rodríguez</td>
+                                    <td>Débito</td>
+                                    <td>2.800.000</td>
+                                </tr>
+                                <tr>
+                                    <td>08/02/2026</td>
+                                    <td>Empresas Polar</td>
+                                    <td>Hidrocapital</td>
+                                    <td>José Martínez</td>
+                                    <td>Pago móvil</td>
+                                    <td>5.100.000</td>
+                                </tr>
+                                <tr>
+                                    <td>10/02/2026</td>
+                                    <td>Proactiva Libertador C.A.</td>
+                                    <td>Hidrocentro</td>
+                                    <td>María González</td>
+                                    <td>Transferencia</td>
+                                    <td>3.250.000</td>
+                                </tr>
+                                <!-- Subtotal Febrero -->
+                                <tr class="subtotal-row">
+                                    <td colspan="5" style="text-align: right; font-weight: 600;">Subtotal</td>
+                                    <td>12.650.000</td>
+                                </tr>
+                                <!-- Total General -->
+                                <tr class="total-row">
+                                    <td colspan="5" style="text-align: right; font-weight: 700;">Total General</td>
+                                    <td>20.200.000</td>
+                                </tr>
+                            </tbody>
+                        </table>
                     </div>
                 </div>
-                <!-- Sin contenido -->
+                
+                <!-- SUBMÓDULO: Reporte de Deudas -->
+                <div id="reporte-deudas" class="submodule">
+                    <div class="page-header">
+                        <div class="page-title-section">
+                            <h1 class="page-title">Reporte de Deudas</h1>
+                            <p class="page-description">Reporte que refleja las deudas pendientes y vencidas por cliente y empresa</p>
+                        </div>
+                        <div style="display: flex; gap: 10px;">
+                            <button class="btn btn-primary" onclick="alert('Descargar Excel - Reporte de Deudas (simulación)')"><i class="fas fa-file-excel"></i> Descargar Excel</button>
+                            <button class="btn btn-primary" onclick="alert('Descargar PDF - Reporte de Deudas (simulación)')"><i class="fas fa-file-pdf"></i> Descargar PDF</button>
+                        </div>
+                    </div>
+                    
+                    <div class="table-container">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>Cliente</th>
+                                    <th>Empresa</th>
+                                    <th>Deuda Total (Bs.)</th>
+                                    <th>Vencido (Bs.)</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <!-- Clientes de Hidrocapital -->
+                                <tr>
+                                    <td>Sambil Chacao</td>
+                                    <td>Hidrocapital</td>
+                                    <td>15.200.000</td>
+                                    <td>12.500.000</td>
+                                </tr>
+                                <tr>
+                                    <td>Empresas Polar</td>
+                                    <td>Hidrocapital</td>
+                                    <td>13.250.000</td>
+                                    <td>9.700.000</td>
+                                </tr>
+                                <!-- Subtotal Hidrocapital -->
+                                <tr class="subtotal-row">
+                                    <td colspan="2" style="text-align: right; font-weight: 600;">Subtotal</td>
+                                    <td>28.450.000</td>
+                                    <td>22.200.000</td>
+                                </tr>
+                                <!-- Cliente de Hidrocaribe -->
+                                <tr>
+                                    <td>Asotrave</td>
+                                    <td>Hidrocaribe</td>
+                                    <td>12.750.000</td>
+                                    <td>9.500.000</td>
+                                </tr>
+                                <!-- Subtotal Hidrocaribe -->
+                                <tr class="subtotal-row">
+                                    <td colspan="2" style="text-align: right; font-weight: 600;">Subtotal</td>
+                                    <td>12.750.000</td>
+                                    <td>9.500.000</td>
+                                </tr>
+                                <!-- Total General -->
+                                <tr class="total-row">
+                                    <td colspan="2" style="text-align: right; font-weight: 700;">Total General</td>
+                                    <td>41.200.000</td>
+                                    <td>31.700.000</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+                
+                <!-- SUBMÓDULO: Reporte de Clientes -->
+                <div id="reporte-clientes" class="submodule">
+                    <div class="page-header">
+                        <div class="page-title-section">
+                            <h1 class="page-title">Reporte de Clientes</h1>
+                            <p class="page-description">Reporte que refleja el estado de los clientes asociados</p>
+                        </div>
+                        <div style="display: flex; gap: 10px;">
+                            <button class="btn btn-primary" onclick="alert('Descargar Excel - Reporte de Clientes (simulación)')"><i class="fas fa-file-excel"></i> Descargar Excel</button>
+                            <button class="btn btn-primary" onclick="alert('Descargar PDF - Reporte de Clientes (simulación)')"><i class="fas fa-file-pdf"></i> Descargar PDF</button>
+                        </div>
+                    </div>
+                    
+                    <div class="table-container">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>Cliente</th>
+                                    <th>Empresa</th>
+                                    <th>RIF</th>
+                                    <th>Último Pago</th>
+                                    <th>Deuda (Bs.)</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <!-- Clientes de Hidrocapital -->
+                                <tr>
+                                    <td>Sambil Chacao</td>
+                                    <td>Hidrocapital</td>
+                                    <td>J123456789</td>
+                                    <td>02/02/2026</td>
+                                    <td>15.200.000</td>
+                                </tr>
+                                <tr>
+                                    <td>Empresas Polar</td>
+                                    <td>Hidrocapital</td>
+                                    <td>J987654321</td>
+                                    <td>08/02/2026</td>
+                                    <td>13.250.000</td>
+                                </tr>
+                                <!-- Subtotal Hidrocapital -->
+                                <tr class="subtotal-row">
+                                    <td colspan="4" style="text-align: right; font-weight: 600;">Subtotal</td>
+                                    <td>28.450.000</td>
+                                </tr>
+                                <!-- Cliente de Hidrocaribe -->
+                                <tr>
+                                    <td>Asotrave</td>
+                                    <td>Hidrocaribe</td>
+                                    <td>J556677880</td>
+                                    <td>05/02/2026</td>
+                                    <td>12.750.000</td>
+                                </tr>
+                                <!-- Subtotal Hidrocaribe -->
+                                <tr class="subtotal-row">
+                                    <td colspan="4" style="text-align: right; font-weight: 600;">Subtotal</td>
+                                    <td>12.750.000</td>
+                                </tr>
+                                <!-- Total General -->
+                                <tr class="total-row">
+                                    <td colspan="4" style="text-align: right; font-weight: 700;">Total General</td>
+                                    <td>41.200.000</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
             </div>
 
             <!-- PERFIL DE USUARIO -->
@@ -2035,6 +2361,7 @@
         // ---------- FUNCIONES GENERALES ----------
         let sidebarCollapsed = false;
         let ingresosChart;
+        let lastReportSubmodule = 'cobranzas';
 
         function getTodayDate() {
             const today = new Date();
@@ -2069,17 +2396,35 @@
                 });
             }, 10);
 
-            // RESTAURAR BOTONES DEL HEADER (usando clase header-buttons)
             const headerButtons = module.querySelectorAll('.header-buttons');
             headerButtons.forEach(btn => btn.style.display = 'flex');
+            
+            if (moduleId === 'reportes') {
+                // Restaurar último submódulo activo
+                document.querySelectorAll('#reportes .submodule').forEach(sm => sm.classList.remove('active'));
+                document.getElementById(`reporte-${lastReportSubmodule}`).classList.add('active');
+                
+                // Colapsar submenú al entrar desde otro módulo
+                const submenu = document.getElementById('reportesSubmenu');
+                const arrow = document.getElementById('reportesArrow');
+                if (submenu) submenu.classList.remove('open');
+                if (arrow) arrow.classList.remove('open');
+                
+                // Marcar el submódulo correspondiente en el submenú
+                document.querySelectorAll('#reportesSubmenu .submenu-item').forEach(item => item.classList.remove('active'));
+                document.querySelector(`#reportesSubmenu .submenu-item[data-submodule="${lastReportSubmodule}"]`).classList.add('active');
+            }
         }
 
         function changeModule(moduleId) {
             document.querySelectorAll('.module-content').forEach(m => m.classList.remove('active'));
             document.getElementById(moduleId).classList.add('active');
+            
             document.querySelectorAll('.menu-item').forEach(item => {
                 item.classList.remove('active');
-                if (item.getAttribute('data-module') === moduleId) item.classList.add('active');
+                if (item.getAttribute('data-module') === moduleId && !item.classList.contains('has-submenu')) {
+                    item.classList.add('active');
+                }
             });
             
             if (moduleId !== 'perfil') {
@@ -2209,6 +2554,47 @@
                 ingresosChart.data.labels = days15;
                 ingresosChart.data.datasets[0].data = values15;
                 ingresosChart.update();
+            });
+        }
+
+        // ---------- FUNCIONES PARA EL SUBMENÚ DE REPORTES (CORREGIDO) ----------
+        function initReportesSubmenu() {
+            const parentLink = document.getElementById('reportesParentLink');
+            const submenu = document.getElementById('reportesSubmenu');
+            const arrow = document.getElementById('reportesArrow');
+
+            // Al hacer clic en el padre, SOLO expandir/colapsar
+            parentLink.addEventListener('click', (e) => {
+                e.preventDefault();
+                submenu.classList.toggle('open');
+                arrow.classList.toggle('open');
+            });
+
+            const submenuItems = document.querySelectorAll('#reportesSubmenu .submenu-item');
+            submenuItems.forEach(item => {
+                item.addEventListener('click', (e) => {
+                    e.preventDefault();
+                    
+                    const submodule = item.getAttribute('data-submodule');
+                    lastReportSubmodule = submodule;
+                    
+                    // Marcar como activo en el submenú
+                    submenuItems.forEach(si => si.classList.remove('active'));
+                    item.classList.add('active');
+                    
+                    // Cambiar el submódulo activo dentro del módulo reportes
+                    document.querySelectorAll('#reportes .submodule').forEach(sm => sm.classList.remove('active'));
+                    document.getElementById(`reporte-${submodule}`).classList.add('active');
+                    
+                    // Si el módulo Reportes no está activo, activarlo
+                    if (!document.getElementById('reportes').classList.contains('active')) {
+                        document.querySelectorAll('.module-content').forEach(m => m.classList.remove('active'));
+                        document.getElementById('reportes').classList.add('active');
+                        
+                        // No marcar ningún .menu-item como activo (excepto los submódulos ya marcados)
+                        document.querySelectorAll('.menu-item').forEach(mi => mi.classList.remove('active'));
+                    }
+                });
             });
         }
 
@@ -2475,7 +2861,7 @@
             const cobranzasFecha = document.getElementById('cobranzasFecha');
             if (cobranzasFecha) cobranzasFecha.innerText = `Actualizado: ${today}`;
 
-            document.querySelectorAll('.menu-item').forEach(item => {
+            document.querySelectorAll('.menu-item:not(.has-submenu)').forEach(item => {
                 item.addEventListener('click', function(e) {
                     e.preventDefault();
                     const moduleId = this.getAttribute('data-module');
@@ -2503,6 +2889,9 @@
             initChart();
             initModal();
             initOtpModal();
+            initReportesSubmenu();
+
+            changeModule('dashboard');
 
             // ---------- EMPRESAS (eventos) ----------
             const btnFiltroEmp = document.getElementById('btnFiltroEmpresas');
@@ -2867,7 +3256,6 @@
                 });
             }
 
-            // Ocultar todos los buscadores al inicio
             const allSearchBars = document.querySelectorAll('.search-bar');
             allSearchBars.forEach(sb => sb.style.display = 'none');
         });
