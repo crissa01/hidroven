@@ -33,6 +33,7 @@
             --shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
             --sidebar-bg: white;
             --stat-label-color: #000000;
+            --modal-overlay: rgba(0,0,0,0.5);
         }
 
         body.dark-mode {
@@ -47,6 +48,7 @@
             --shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
             --sidebar-bg: #252525;
             --stat-label-color: #ffffff;
+            --modal-overlay: rgba(0,0,0,0.7);
         }
 
         body {
@@ -415,6 +417,14 @@
             color: var(--azul-medio);
         }
 
+        .btn-danger {
+            background-color: var(--danger-color);
+            color: white;
+        }
+        .btn-danger:hover {
+            background-color: #c82333;
+        }
+
         .btn-link {
             background: none;
             border: none;
@@ -582,6 +592,7 @@
             display: flex;
             flex-direction: column;
             gap: 6px;
+            position: relative;
         }
         .form-group.full-width {
             grid-column: span 2;
@@ -600,6 +611,7 @@
             background-color: var(--bg-body);
             color: var(--text-primary);
             font-size: 14px;
+            width: 100%;
         }
         .form-group input:focus,
         .form-group select:focus,
@@ -607,12 +619,78 @@
             outline: none;
             border-color: var(--azul-medio);
         }
+        .form-group input:disabled,
+        .form-group select:disabled {
+            background-color: var(--bg-body);
+            opacity: 0.7;
+            cursor: not-allowed;
+        }
+        /* Campo con icono de visibilidad */
+        .password-wrapper {
+            position: relative;
+            display: flex;
+            align-items: center;
+        }
+        .password-wrapper input {
+            padding-right: 40px;
+        }
+        .toggle-password {
+            position: absolute;
+            right: 10px;
+            top: 50%;
+            transform: translateY(-50%);
+            background: none;
+            border: none;
+            cursor: pointer;
+            color: var(--text-secondary);
+            font-size: 16px;
+            padding: 5px;
+        }
+        .toggle-password:hover {
+            color: var(--azul-medio);
+        }
+
         .form-actions {
             grid-column: span 2;
             display: flex;
             justify-content: flex-end;
             gap: 15px;
             margin-top: 20px;
+        }
+
+        /* LISTA DE CLIENTES ASOCIADOS */
+        .clientes-lista {
+            margin-top: 5px;
+            padding: 10px 12px;
+            background-color: var(--bg-body);
+            border: 1px solid var(--border-color);
+            border-radius: 5px;
+            color: var(--text-primary);
+            font-size: 14px;
+        }
+        .clientes-lista ul {
+            list-style: none;
+            padding-left: 0;
+            margin: 5px 0 0 0;
+        }
+        .clientes-lista li {
+            padding: 4px 0;
+            border-bottom: 1px dashed var(--border-color);
+        }
+        .clientes-lista li:last-child {
+            border-bottom: none;
+        }
+        .clientes-lista .total {
+            margin-top: 8px;
+            padding-top: 8px;
+            border-top: 1px solid var(--border-color);
+            font-weight: 600;
+            color: var(--azul-oscuro);
+        }
+
+        /* SEPARADOR ENTRE SECCIONES DEL FORMULARIO */
+        .section-spacer {
+            margin-top: 25px;
         }
 
         .chart-container {
@@ -798,6 +876,103 @@
             padding: 5px;
         }
 
+        /* MODAL DE CONFIRMACIÓN (cierre sesión) */
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: var(--modal-overlay);
+            display: none;
+            justify-content: center;
+            align-items: center;
+            z-index: 2000;
+            backdrop-filter: blur(1px);
+        }
+
+        .modal-overlay.active {
+            display: flex;
+        }
+
+        .modal {
+            background-color: var(--bg-card);
+            border-radius: 10px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+            width: 90%;
+            max-width: 450px;
+            padding: 25px;
+            border-top: 5px solid var(--azul-medio);
+            position: relative;
+        }
+
+        .modal h2 {
+            color: var(--azul-oscuro);
+            font-size: 22px;
+            font-weight: 700;
+            margin-bottom: 15px;
+            padding-bottom: 10px;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .modal p {
+            font-size: 16px;
+            margin-bottom: 25px;
+            color: var(--text-primary);
+        }
+
+        .modal-actions {
+            display: flex;
+            justify-content: flex-end;
+            gap: 15px;
+        }
+
+        /* Botón de cierre (X) para modales */
+        .modal-close {
+            position: absolute;
+            top: 15px;
+            right: 15px;
+            background: none;
+            border: none;
+            color: var(--text-secondary);
+            font-size: 20px;
+            cursor: pointer;
+            padding: 5px;
+            transition: color 0.2s;
+        }
+        .modal-close:hover {
+            color: var(--danger-color);
+        }
+
+        /* MODAL OTP */
+        .modal.otp-modal {
+            text-align: center;
+        }
+        .modal.otp-modal h2 {
+            text-align: center;
+            border-bottom: none;
+            padding-bottom: 0;
+        }
+        .qr-icon {
+            font-size: 120px;
+            text-align: center;
+            color: var(--azul-oscuro);
+            margin-bottom: 20px;
+        }
+        .otp-info {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+        .otp-info p {
+            margin-bottom: 5px;
+        }
+        .otp-actions {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin-top: 20px;
+        }
+
         @media (max-width: 768px) {
             .sidebar {
                 transform: translateX(-100%);
@@ -851,6 +1026,10 @@
             }
             .form-actions {
                 grid-column: span 1;
+            }
+            .modal {
+                width: 95%;
+                padding: 20px;
             }
         }
 
@@ -917,11 +1096,42 @@
                 <i class="fas fa-user"></i>
             </div>
             <div class="profile-dropdown" id="profileDropdown">
-                <a href="#"><i class="fas fa-id-card"></i> Perfil</a>
-                <a href="#"><i class="fas fa-sign-out-alt"></i> Cerrar sesión</a>
+                <a href="#" id="perfilLink"><i class="fas fa-id-card"></i> Perfil</a>
+                <a href="#" id="cerrarSesionLink"><i class="fas fa-sign-out-alt"></i> Cerrar sesión</a>
             </div>
         </div>
     </header>
+
+    <!-- MODAL DE CONFIRMACIÓN (CIERRE SESIÓN) -->
+    <div class="modal-overlay" id="confirmModal">
+        <div class="modal">
+            <button class="modal-close" id="modalCloseBtn"><i class="fas fa-times"></i></button>
+            <h2>Confirmación</h2>
+            <p>¿Está seguro que desea cerrar sesión?</p>
+            <div class="modal-actions">
+                <button class="btn btn-secondary" id="modalCancelBtn">Cancelar</button>
+                <button class="btn btn-primary" id="modalConfirmBtn">Continuar</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- MODAL OTP (QR) -->
+    <div class="modal-overlay" id="otpModal">
+        <div class="modal otp-modal">
+            <button class="modal-close" id="otpModalClose"><i class="fas fa-times"></i></button>
+            <h2>OTP</h2>
+            <div class="qr-icon">
+                <i class="fas fa-qrcode" style="font-size: 120px;"></i>
+            </div>
+            <div class="otp-info">
+                <p><strong>Serial:</strong> <span id="otpSerial"></span></p>
+                <p><strong>Código OTP:</strong> <span id="otpCodigo"></span></p>
+            </div>
+            <div class="otp-actions">
+                <button class="btn btn-primary" id="otpNuevoBtn">Obtener nuevo OTP</button>
+            </div>
+        </div>
+    </div>
 
     <div class="main-container">
         <nav class="sidebar" id="sidebar">
@@ -952,7 +1162,7 @@
                 </li>
                 <li class="menu-item" data-module="dispositivos">
                     <a href="#" class="menu-link">
-                        <i class="menu-icon fas fa-microchip"></i>
+                        <i class="menu-icon fas fa-mobile-alt"></i>
                         <span class="menu-text">Dispositivos</span>
                     </a>
                 </li>
@@ -966,7 +1176,7 @@
         </nav>
 
         <main class="content">
-            <!-- DASHBOARD - subtítulo corregido -->
+            <!-- DASHBOARD -->
             <div id="dashboard" class="module-content active">
                 <div class="page-header">
                     <div class="page-title-section">
@@ -1123,14 +1333,14 @@
                 </div>
             </div>
 
-            <!-- MÓDULO EMPRESAS - CON SECCIÓN "Clientes asociados" -->
+            <!-- MÓDULO EMPRESAS (con clase header-buttons) -->
             <div id="empresas" class="module-content">
                 <div class="page-header">
                     <div class="page-title-section">
                         <h1 class="page-title">Empresas Hidrológicas</h1>
                         <p class="page-description">Gestión de las empresas proveedoras de servicio de agua</p>
                     </div>
-                    <div style="display: flex; gap: 10px;">
+                    <div style="display: flex; gap: 10px;" id="empresasHeaderButtons" class="header-buttons">
                         <button class="btn btn-filter" id="btnFiltroEmpresas"><i class="fas fa-filter"></i> Filtro</button>
                         <button class="btn btn-primary" id="btnCrearEmpresa"><i class="fas fa-plus"></i> Crear</button>
                     </div>
@@ -1186,12 +1396,12 @@
                                 <button class="arrow" onclick="cambiarPaginaEmpresas('next')"><i class="fas fa-chevron-right"></i></button>
                             </div>
                             <div>
+                                <span style="margin-right: 5px;">Mostrar:</span>
                                 <select class="rows-select" id="rowsPerPageEmpresas">
                                     <option value="10" selected>10</option>
                                     <option value="15">15</option>
                                     <option value="20">20</option>
                                 </select>
-                                <span style="margin-left: 5px;">datos</span>
                             </div>
                         </div>
                     </div>
@@ -1240,17 +1450,12 @@
                             </select>
                         </div>
                         
-                        <!-- NUEVA SECCIÓN: Clientes asociados -->
-                        <div class="form-section-title">Clientes asociados</div>
-                        <div class="form-group full-width">
-                            <label>Seleccione los clientes de esta empresa</label>
-                            <select id="clientesAsociadosEmpresa" multiple size="4">
-                                <option value="Sambil Chacao">Sambil Chacao</option>
-                                <option value="Empresas Polar">Empresas Polar</option>
-                                <option value="Proactiva Libertador C.A.">Proactiva Libertador C.A.</option>
-                                <option value="Asotrave">Asotrave</option>
-                            </select>
-                            <small style="color: var(--text-secondary);">Presione Ctrl para seleccionar múltiples</small>
+                        <!-- SECCIÓN CLIENTES ASOCIADOS - solo visible en edición -->
+                        <div id="clientesAsociadosSection" style="display: none; grid-column: span 2;">
+                            <div class="form-section-title">Clientes asociados</div>
+                            <div id="clientesAsociadosLista" class="clientes-lista">
+                                <!-- Se llenará dinámicamente -->
+                            </div>
                         </div>
                         
                         <div class="form-actions">
@@ -1261,14 +1466,14 @@
                 </div>
             </div>
 
-            <!-- MÓDULO CLIENTES - ESTRUCTURA DEFINITIVA -->
+            <!-- MÓDULO CLIENTES (con clase header-buttons) -->
             <div id="clientes" class="module-content">
                 <div class="page-header">
                     <div class="page-title-section">
                         <h1 class="page-title">Clientes</h1>
                         <p class="page-description">Gestión de clientes asociados a las empresas hidrológicas</p>
                     </div>
-                    <div style="display: flex; gap: 10px;">
+                    <div style="display: flex; gap: 10px;" id="clientesHeaderButtons" class="header-buttons">
                         <button class="btn btn-filter" id="btnFiltroClientes"><i class="fas fa-filter"></i> Filtro</button>
                         <button class="btn btn-primary" id="btnCrearCliente"><i class="fas fa-plus"></i> Crear</button>
                     </div>
@@ -1340,113 +1545,122 @@
                                 <button class="arrow" onclick="cambiarPaginaClientes('next')"><i class="fas fa-chevron-right"></i></button>
                             </div>
                             <div>
+                                <span style="margin-right: 5px;">Mostrar:</span>
                                 <select class="rows-select" id="rowsPerPageClientes">
                                     <option value="10" selected>10</option>
                                     <option value="15">15</option>
                                     <option value="20">20</option>
                                 </select>
-                                <span style="margin-left: 5px;">datos</span>
                             </div>
                         </div>
                     </div>
                 </div>
                 
-                <!-- FORMULARIO DE CLIENTE - ESTRUCTURA CORREGIDA -->
+                <!-- FORMULARIO DE CLIENTE -->
                 <div id="formularioClienteContainer" class="form-container" style="display: none;">
-                    <!-- SECCIÓN 1: Datos de cliente -->
                     <div class="form-section-title">Datos de cliente</div>
-                    <form id="clienteForm" class="form-grid">
-                        <div class="form-group">
-                            <label>Nombre</label>
-                            <input type="text" id="nombreCliente" placeholder="Ej. Sambil Chacao">
-                        </div>
-                        <div class="form-group">
-                            <label>Razón social</label>
-                            <input type="text" id="razonSocialCliente" placeholder="Ej. Sambil Chacao C.A.">
-                        </div>
-                        <div class="form-group">
-                            <label>Tipo de documento</label>
-                            <select id="tipoDocumentoCliente">
-                                <option value="J">J (Jurídico)</option>
-                                <option value="V">V (Venezolano)</option>
-                                <option value="E">E (Extranjero)</option>
-                            </select>
-                        </div>
-                        <div class="form-group">
-                            <label>Documento de identidad</label>
-                            <input type="text" id="numeroDocumentoCliente" placeholder="123456789">
-                        </div>
-                        <div class="form-group">
-                            <label>Correo</label>
-                            <input type="email" id="correoCliente" placeholder="contacto@cliente.com">
-                        </div>
-                        <div class="form-group">
-                            <label>Empresa asociada</label>
-                            <select id="empresaCliente">
-                                <option value="Hidrocapital">Hidrocapital</option>
-                                <option value="Hidrocentro">Hidrocentro</option>
-                                <option value="Hidrocaribe">Hidrocaribe</option>
-                            </select>
-                        </div>
-                        
-                        <!-- SECCIÓN 2: Dirección -->
-                        <div class="form-section-title">Dirección</div>
-                        <div class="form-group">
-                            <label>Estado</label>
-                            <input type="text" id="estadoClienteDir" placeholder="Ej. Miranda">
-                        </div>
-                        <div class="form-group">
-                            <label>Municipio</label>
-                            <input type="text" id="municipioCliente" placeholder="Ej. Chacao">
-                        </div>
-                        <div class="form-group full-width">
-                            <label>Dirección</label>
-                            <input type="text" id="direccionCliente" placeholder="Ej. Av. Francisco de Miranda, CC Sambil">
-                        </div>
-                        
-                        <!-- SECCIÓN 3: Datos del representante legal -->
-                        <div class="form-section-title">Datos del representante legal</div>
-                        <div class="form-group">
-                            <label>Nombre y Apellido</label>
-                            <input type="text" id="repNombreCliente" placeholder="Ej. Juan Pérez">
-                        </div>
-                        <div class="form-group">
-                            <label>Tipo de documento</label>
-                            <select id="repTipoDocumentoCliente">
-                                <option value="V">V</option>
-                                <option value="E">E</option>
-                                <option value="J">J</option>
-                            </select>
-                        </div>
-                        <div class="form-group">
-                            <label>Documento de identidad</label>
-                            <input type="text" id="repDocumentoCliente" placeholder="12345678">
-                        </div>
-                        <div class="form-group">
-                            <label>Número de contacto</label>
-                            <input type="tel" id="repTelefonoCliente" placeholder="04121234567">
-                        </div>
-                        <div class="form-group">
-                            <label>Correo</label>
-                            <input type="email" id="repCorreoCliente" placeholder="juan.perez@example.com">
-                        </div>
-                        
-                        <div class="form-actions">
-                            <button type="button" class="btn btn-secondary" id="btnRegresarCliente"><i class="fas fa-arrow-left"></i> Regresar</button>
-                            <button type="submit" class="btn btn-primary" id="btnGuardarCliente"><i class="fas fa-save"></i> Guardar</button>
+                    <form>
+                        <div class="form-grid">
+                            <div class="form-group">
+                                <label>Nombre</label>
+                                <input type="text" id="nombreCliente" placeholder="Ej. Sambil Chacao">
+                            </div>
+                            <div class="form-group">
+                                <label>Razón social</label>
+                                <input type="text" id="razonSocialCliente" placeholder="Ej. Sambil Chacao C.A.">
+                            </div>
+                            <div class="form-group">
+                                <label>Tipo de documento</label>
+                                <select id="tipoDocumentoCliente">
+                                    <option value="J">J (Jurídico)</option>
+                                    <option value="V">V (Venezolano)</option>
+                                    <option value="E">E (Extranjero)</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label>Documento de identidad</label>
+                                <input type="text" id="numeroDocumentoCliente" placeholder="123456789">
+                            </div>
+                            <div class="form-group">
+                                <label>Correo</label>
+                                <input type="email" id="correoCliente" placeholder="contacto@cliente.com">
+                            </div>
+                            <div class="form-group">
+                                <label>Empresa asociada</label>
+                                <select id="empresaCliente">
+                                    <option value="Hidrocapital">Hidrocapital</option>
+                                    <option value="Hidrocentro">Hidrocentro</option>
+                                    <option value="Hidrocaribe">Hidrocaribe</option>
+                                </select>
+                            </div>
                         </div>
                     </form>
+                    
+                    <div class="section-spacer"></div>
+                    <div class="form-section-title">Dirección</div>
+                    <form>
+                        <div class="form-grid">
+                            <div class="form-group">
+                                <label>Estado</label>
+                                <input type="text" id="estadoClienteDir" placeholder="Ej. Miranda">
+                            </div>
+                            <div class="form-group">
+                                <label>Municipio</label>
+                                <input type="text" id="municipioCliente" placeholder="Ej. Chacao">
+                            </div>
+                            <div class="form-group full-width">
+                                <label>Dirección</label>
+                                <input type="text" id="direccionCliente" placeholder="Ej. Av. Francisco de Miranda, CC Sambil">
+                            </div>
+                        </div>
+                    </form>
+                    
+                    <div class="section-spacer"></div>
+                    <div class="form-section-title">Datos del representante legal</div>
+                    <form>
+                        <div class="form-grid">
+                            <div class="form-group">
+                                <label>Nombre y Apellido</label>
+                                <input type="text" id="repNombreCliente" placeholder="Ej. Juan Pérez">
+                            </div>
+                            <div class="form-group">
+                                <label>Tipo de documento</label>
+                                <select id="repTipoDocumentoCliente">
+                                    <option value="V">V</option>
+                                    <option value="E">E</option>
+                                    <option value="J">J</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label>Documento de identidad</label>
+                                <input type="text" id="repDocumentoCliente" placeholder="12345678">
+                            </div>
+                            <div class="form-group">
+                                <label>Número de contacto</label>
+                                <input type="tel" id="repTelefonoCliente" placeholder="04121234567">
+                            </div>
+                            <div class="form-group">
+                                <label>Correo</label>
+                                <input type="email" id="repCorreoCliente" placeholder="juan.perez@example.com">
+                            </div>
+                        </div>
+                    </form>
+                    
+                    <div class="form-actions" style="margin-top: 30px;">
+                        <button type="button" class="btn btn-secondary" id="btnRegresarCliente"><i class="fas fa-arrow-left"></i> Regresar</button>
+                        <button type="button" class="btn btn-primary" id="btnGuardarCliente"><i class="fas fa-save"></i> Guardar</button>
+                    </div>
                 </div>
             </div>
 
-            <!-- MÓDULO EMPLEADOS -->
+            <!-- MÓDULO EMPLEADOS (con clase header-buttons) -->
             <div id="empleados" class="module-content">
                 <div class="page-header">
                     <div class="page-title-section">
                         <h1 class="page-title">Empleados</h1>
                         <p class="page-description">Gestión de usuarios con permisos de acceso</p>
                     </div>
-                    <div style="display: flex; gap: 10px;">
+                    <div style="display: flex; gap: 10px;" id="empleadosHeaderButtons" class="header-buttons">
                         <button class="btn btn-filter" id="btnFiltroEmpleados"><i class="fas fa-filter"></i> Filtro</button>
                         <button class="btn btn-primary" id="btnCrearEmpleado"><i class="fas fa-plus"></i> Crear</button>
                     </div>
@@ -1513,12 +1727,12 @@
                                 <button class="arrow" onclick="cambiarPaginaEmpleados('next')"><i class="fas fa-chevron-right"></i></button>
                             </div>
                             <div>
+                                <span style="margin-right: 5px;">Mostrar:</span>
                                 <select class="rows-select" id="rowsPerPageEmpleados">
                                     <option value="10" selected>10</option>
                                     <option value="15">15</option>
                                     <option value="20">20</option>
                                 </select>
-                                <span style="margin-left: 5px;">datos</span>
                             </div>
                         </div>
                     </div>
@@ -1559,8 +1773,11 @@
                             <label>Correo</label>
                             <input type="email" id="correoEmpleado" placeholder="maria.gonzalez@hidroven.com">
                         </div>
-                        
-                        <div class="form-section-title">Datos del usuario</div>
+                    </form>
+                    
+                    <div class="section-spacer"></div>
+                    <div class="form-section-title">Datos del usuario</div>
+                    <form class="form-grid" id="datosUsuarioForm">
                         <div class="form-group">
                             <label>Usuario</label>
                             <input type="text" id="usuarioSistemaEmpleado" placeholder="mgonzalez">
@@ -1579,22 +1796,45 @@
                                 <option value="Inactivo">Inactivo</option>
                             </select>
                         </div>
-                        <div class="form-actions">
-                            <button type="button" class="btn btn-secondary" id="btnRegresarEmpleado"><i class="fas fa-arrow-left"></i> Regresar</button>
-                            <button type="submit" class="btn btn-primary" id="btnGuardarEmpleado"><i class="fas fa-save"></i> Guardar</button>
+                        
+                        <!-- Campos de contraseña - solo visibles en edición -->
+                        <div id="passwordFieldsContainer" style="display: none; grid-column: span 2; display: grid; grid-template-columns: repeat(2, 1fr); gap: 20px 30px;">
+                            <div class="form-group">
+                                <label>Contraseña</label>
+                                <div class="password-wrapper">
+                                    <input type="password" id="passwordEmpleado" placeholder="********">
+                                    <button type="button" class="toggle-password" onclick="togglePassword('passwordEmpleado', this)">
+                                        <i class="fas fa-eye"></i>
+                                    </button>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label>Confirmar contraseña</label>
+                                <div class="password-wrapper">
+                                    <input type="password" id="confirmPasswordEmpleado" placeholder="********">
+                                    <button type="button" class="toggle-password" onclick="togglePassword('confirmPasswordEmpleado', this)">
+                                        <i class="fas fa-eye"></i>
+                                    </button>
+                                </div>
+                            </div>
                         </div>
                     </form>
+                    
+                    <div class="form-actions">
+                        <button type="button" class="btn btn-secondary" id="btnRegresarEmpleado"><i class="fas fa-arrow-left"></i> Regresar</button>
+                        <button type="submit" class="btn btn-primary" id="btnGuardarEmpleado"><i class="fas fa-save"></i> Guardar</button>
+                    </div>
                 </div>
             </div>
 
-            <!-- MÓDULO DISPOSITIVOS -->
+            <!-- MÓDULO DISPOSITIVOS (con clase header-buttons) -->
             <div id="dispositivos" class="module-content">
                 <div class="page-header">
                     <div class="page-title-section">
-                        <h1 class="page-title">Dispositivos de Medición</h1>
-                        <p class="page-description">Gestión de medidores y telemetría instalados en clientes</p>
+                        <h1 class="page-title">Dispositivos</h1>
+                        <p class="page-description">Gestión de equipos del sistema</p>
                     </div>
-                    <div style="display: flex; gap: 10px;">
+                    <div style="display: flex; gap: 10px;" id="dispositivosHeaderButtons" class="header-buttons">
                         <button class="btn btn-filter" id="btnFiltroDispositivos"><i class="fas fa-filter"></i> Filtro</button>
                         <button class="btn btn-primary" id="btnCrearDispositivo"><i class="fas fa-plus"></i> Crear</button>
                     </div>
@@ -1602,7 +1842,7 @@
                 
                 <div id="buscadorDispositivos" class="search-bar" style="display: none;">
                     <i class="fas fa-search" style="color: var(--text-secondary);"></i>
-                    <input type="text" id="searchInputDispositivos" placeholder="Buscar por Cliente o Empresa">
+                    <input type="text" id="searchInputDispositivos" placeholder="Buscar por Código, Serial o Tipo">
                     <button class="btn-clear" id="btnLimpiarFiltroDispositivos"><i class="fas fa-times"></i> Limpiar</button>
                 </div>
                 
@@ -1611,56 +1851,40 @@
                         <table id="tablaDispositivos">
                             <thead>
                                 <tr>
-                                    <th>Cliente</th>
-                                    <th>Empresa</th>
-                                    <th>Medidores</th>
-                                    <th>Sensores</th>
-                                    <th>Telemetría</th>
-                                    <th>Total</th>
+                                    <th>Código</th>
+                                    <th>Serial</th>
+                                    <th>Tipo</th>
+                                    <th>OTP</th>
                                     <th>Estado</th>
                                 </tr>
                             </thead>
                             <tbody>
                                 <tr>
-                                    <td><button class="btn-link" onclick="editarDispositivo('Sambil Chacao')">Sambil Chacao</button></td>
-                                    <td>Hidrocapital</td>
-                                    <td>32</td>
-                                    <td>8</td>
-                                    <td>4</td>
-                                    <td>44</td>
-                                    <td><span class="badge badge-success">96% Operativo</span></td>
+                                    <td><button class="btn-link" onclick="editarDispositivo('TERM-001')">TERM-001</button></td>
+                                    <td>SN12345678</td>
+                                    <td>Punto de venta</td>
+                                    <td>
+                                        <button class="btn-link" onclick="mostrarOTP('SN12345678', '742951')">
+                                            <i class="fas fa-qrcode" style="font-size: 18px;"></i>
+                                        </button>
+                                    </td>
+                                    <td><span class="badge badge-success">Activo</span></td>
                                 </tr>
                                 <tr>
-                                    <td><button class="btn-link" onclick="alert('Ver detalles de Empresas Polar')">Empresas Polar</button></td>
-                                    <td>Hidrocapital</td>
-                                    <td>28</td>
-                                    <td>6</td>
-                                    <td>3</td>
-                                    <td>37</td>
-                                    <td><span class="badge badge-warning">89% Operativo</span></td>
-                                </tr>
-                                <tr>
-                                    <td><button class="btn-link" onclick="alert('Ver detalles de Proactiva Libertador C.A.')">Proactiva Libertador C.A.</button></td>
-                                    <td>Hidrocentro</td>
-                                    <td>18</td>
-                                    <td>4</td>
-                                    <td>2</td>
-                                    <td>24</td>
-                                    <td><span class="badge badge-success">98% Operativo</span></td>
-                                </tr>
-                                <tr>
-                                    <td><button class="btn-link" onclick="alert('Ver detalles de Asotrave')">Asotrave</button></td>
-                                    <td>Hidrocaribe</td>
-                                    <td>15</td>
-                                    <td>5</td>
-                                    <td>2</td>
-                                    <td>22</td>
-                                    <td><span class="badge badge-success">95% Operativo</span></td>
+                                    <td><button class="btn-link" onclick="verDetalleDispositivo('TERM-002')">TERM-002</button></td>
+                                    <td>SN87654321</td>
+                                    <td>Punto de venta</td>
+                                    <td>
+                                        <button class="btn-link" onclick="mostrarOTP('SN87654321', '159753')">
+                                            <i class="fas fa-qrcode" style="font-size: 18px;"></i>
+                                        </button>
+                                    </td>
+                                    <td><span class="badge badge-danger">Inactivo</span></td>
                                 </tr>
                             </tbody>
                         </table>
                         <div class="table-footer">
-                            <div id="mostrandoDispositivos">Mostrando 4 dispositivos</div>
+                            <div id="mostrandoDispositivos">Mostrando 2 dispositivos</div>
                             <div class="pagination">
                                 <button class="arrow" onclick="cambiarPaginaDispositivos('prev')"><i class="fas fa-chevron-left"></i></button>
                                 <button class="active">1</button>
@@ -1671,66 +1895,49 @@
                                 <button class="arrow" onclick="cambiarPaginaDispositivos('next')"><i class="fas fa-chevron-right"></i></button>
                             </div>
                             <div>
+                                <span style="margin-right: 5px;">Mostrar:</span>
                                 <select class="rows-select" id="rowsPerPageDispositivos">
                                     <option value="10" selected>10</option>
                                     <option value="15">15</option>
                                     <option value="20">20</option>
                                 </select>
-                                <span style="margin-left: 5px;">datos</span>
                             </div>
                         </div>
                     </div>
                 </div>
                 
+                <!-- FORMULARIO DE DISPOSITIVO -->
                 <div id="formularioDispositivoContainer" class="form-container" style="display: none;">
                     <div class="form-section-title">Datos del dispositivo</div>
                     <form id="dispositivoForm" class="form-grid">
                         <div class="form-group">
-                            <label>Cliente</label>
-                            <select id="clienteDispositivo">
-                                <option value="Sambil Chacao">Sambil Chacao</option>
-                                <option value="Empresas Polar">Empresas Polar</option>
-                                <option value="Proactiva Libertador C.A.">Proactiva Libertador C.A.</option>
-                                <option value="Asotrave">Asotrave</option>
+                            <label>Código</label>
+                            <input type="text" id="codigoDispositivo" placeholder="Ej. TERM-001">
+                        </div>
+                        <div class="form-group">
+                            <label>Serial</label>
+                            <input type="text" id="serialDispositivo" placeholder="SN12345678">
+                        </div>
+                        <div class="form-group">
+                            <label>Modelo</label>
+                            <input type="text" id="modeloDispositivo" placeholder="Ej. TPV-2000">
+                        </div>
+                        <div class="form-group">
+                            <label>Dirección IP</label>
+                            <input type="text" id="ipDispositivo" placeholder="192.168.1.100">
+                        </div>
+                        <div class="form-group">
+                            <label>Tipo</label>
+                            <select id="tipoDispositivo">
+                                <option value="Punto de venta">Punto de venta</option>
                             </select>
                         </div>
                         <div class="form-group">
-                            <label>Empresa</label>
-                            <select id="empresaDispositivo">
-                                <option value="Hidrocapital">Hidrocapital</option>
-                                <option value="Hidrocentro">Hidrocentro</option>
-                                <option value="Hidrocaribe">Hidrocaribe</option>
+                            <label>Estado</label>
+                            <select id="estadoDispositivoForm">
+                                <option value="Activo">Activo</option>
+                                <option value="Inactivo">Inactivo</option>
                             </select>
-                        </div>
-                        <div class="form-group">
-                            <label>Medidores</label>
-                            <input type="number" id="medidoresDispositivo" placeholder="0">
-                        </div>
-                        <div class="form-group">
-                            <label>Sensores</label>
-                            <input type="number" id="sensoresDispositivo" placeholder="0">
-                        </div>
-                        <div class="form-group">
-                            <label>Telemetría</label>
-                            <input type="number" id="telemetriaDispositivo" placeholder="0">
-                        </div>
-                        <div class="form-group">
-                            <label>Total</label>
-                            <input type="text" id="totalDispositivo" placeholder="Calculado automáticamente" readonly>
-                        </div>
-                        <div class="form-section-title">Configuración</div>
-                        <div class="form-group">
-                            <label>Estado operativo</label>
-                            <select id="estadoDispositivo">
-                                <option value="98% Operativo">98% Operativo</option>
-                                <option value="95% Operativo">95% Operativo</option>
-                                <option value="89% Operativo">89% Operativo</option>
-                                <option value="85% Operativo">85% Operativo</option>
-                            </select>
-                        </div>
-                        <div class="form-group">
-                            <label>Último mantenimiento</label>
-                            <input type="text" id="ultimoMantenimientoDispositivo" placeholder="DD/MM/AAAA">
                         </div>
                         <div class="form-actions">
                             <button type="button" class="btn btn-secondary" id="btnRegresarDispositivo"><i class="fas fa-arrow-left"></i> Regresar</button>
@@ -1740,7 +1947,7 @@
                 </div>
             </div>
 
-            <!-- MÓDULO REPORTES (sin cambios) -->
+            <!-- MÓDULO REPORTES - VACÍO -->
             <div id="reportes" class="module-content">
                 <div class="page-header">
                     <div class="page-title-section">
@@ -1748,63 +1955,73 @@
                         <p class="page-description">Informes de cobranzas, deudas y gestión de clientes.</p>
                     </div>
                 </div>
-                <div class="stats-container">
-                    <div class="stat-card card-reportes">
-                        <div class="stat-icon reportes"><i class="fas fa-file-alt"></i></div>
-                        <div class="stat-label">Reportes Generados</div>
-                        <div class="stat-value">48</div>
-                    </div>
-                    <div class="stat-card card-reportes">
-                        <div class="stat-icon reportes"><i class="fas fa-chart-line"></i></div>
-                        <div class="stat-label">Indicadores</div>
-                        <div class="stat-value">12</div>
-                    </div>
-                    <div class="stat-card card-reportes">
-                        <div class="stat-icon reportes"><i class="fas fa-download"></i></div>
-                        <div class="stat-label">Descargas Mes</div>
-                        <div class="stat-value">1.245</div>
-                    </div>
-                    <div class="stat-card card-reportes">
-                        <div class="stat-icon reportes"><i class="fas fa-clock"></i></div>
-                        <div class="stat-label">Reportes a Tiempo</div>
-                        <div class="stat-value">100%</div>
+                <!-- Sin contenido -->
+            </div>
+
+            <!-- PERFIL DE USUARIO -->
+            <div id="perfil" class="module-content">
+                <div class="page-header">
+                    <div class="page-title-section">
+                        <h1 class="page-title">Perfil de Usuario</h1>
                     </div>
                 </div>
-                <div class="table-container">
-                    <div class="table-header">
-                        <h3 class="table-title">Reportes Disponibles</h3>
-                        <button class="btn btn-primary"><i class="fas fa-plus"></i> Nuevo Reporte</button>
+                
+                <div class="form-container">
+                    <div class="form-section-title">Información personal</div>
+                    <div class="form-grid">
+                        <div class="form-group">
+                            <label>Nombre y Apellido</label>
+                            <input type="text" id="perfilNombre" value="Carlos Rodríguez" disabled>
+                        </div>
+                        <div class="form-group">
+                            <label>Tipo de documento</label>
+                            <select id="perfilTipoDoc" disabled>
+                                <option value="V" selected>V (Venezolano)</option>
+                                <option value="E">E (Extranjero)</option>
+                                <option value="J">J (Jurídico)</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label>Documento de identidad</label>
+                            <input type="text" id="perfilDoc" value="12345678" disabled>
+                        </div>
+                        <div class="form-group">
+                            <label>Rol</label>
+                            <input type="text" id="perfilRol" value="Administrador" disabled>
+                        </div>
+                        <div class="form-group">
+                            <label>Usuario</label>
+                            <input type="text" id="perfilUsuario" value="crodriguez" disabled>
+                        </div>
                     </div>
-                    <table>
-                        <thead>
-                            <tr>
-                                <th>ID</th>
-                                <th>Nombre</th>
-                                <th>Frecuencia</th>
-                                <th>Última Generación</th>
-                                <th>Descargas</th>
-                                <th>Acciones</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <tr>
-                                <td>FIN-2026-001</td>
-                                <td>Estado de Cobranzas por Cliente</td>
-                                <td>Mensual</td>
-                                <td>01/02/2026</td>
-                                <td>245</td>
-                                <td><button class="btn btn-primary" style="padding:5px 10px;"><i class="fas fa-eye"></i> Ver</button> <button class="btn" style="padding:5px 10px; background:#f8f9fa; color:var(--azul-oscuro); border:1px solid #ddd;"><i class="fas fa-download"></i> Descargar</button></td>
-                            </tr>
-                            <tr>
-                                <td>FIN-2026-002</td>
-                                <td>Deudas por Empresa</td>
-                                <td>Semanal</td>
-                                <td>08/02/2026</td>
-                                <td>180</td>
-                                <td><button class="btn btn-primary" style="padding:5px 10px;"><i class="fas fa-eye"></i> Ver</button> <button class="btn" style="padding:5px 10px; background:#f8f9fa; color:var(--azul-oscuro); border:1px solid #ddd;"><i class="fas fa-download"></i> Descargar</button></td>
-                            </tr>
-                        </tbody>
-                    </table>
+                    
+                    <div class="section-spacer"></div>
+                    <div class="form-section-title">Cambio de contraseña</div>
+                    <div class="form-grid">
+                        <div class="form-group">
+                            <label>Nueva contraseña</label>
+                            <div class="password-wrapper">
+                                <input type="password" id="perfilNuevaPassword" placeholder="********">
+                                <button type="button" class="toggle-password" onclick="togglePassword('perfilNuevaPassword', this)">
+                                    <i class="fas fa-eye"></i>
+                                </button>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label>Confirmar nueva contraseña</label>
+                            <div class="password-wrapper">
+                                <input type="password" id="perfilConfirmPassword" placeholder="********">
+                                <button type="button" class="toggle-password" onclick="togglePassword('perfilConfirmPassword', this)">
+                                    <i class="fas fa-eye"></i>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="form-actions">
+                        <button type="button" class="btn btn-secondary" id="btnRegresarPerfil"><i class="fas fa-arrow-left"></i> Regresar</button>
+                        <button type="button" class="btn btn-primary" id="btnActualizarPerfil"><i class="fas fa-save"></i> Actualizar</button>
+                    </div>
                 </div>
             </div>
 
@@ -1851,6 +2068,10 @@
                     input.dispatchEvent(new Event('keyup'));
                 });
             }, 10);
+
+            // RESTAURAR BOTONES DEL HEADER (usando clase header-buttons)
+            const headerButtons = module.querySelectorAll('.header-buttons');
+            headerButtons.forEach(btn => btn.style.display = 'flex');
         }
 
         function changeModule(moduleId) {
@@ -1861,7 +2082,9 @@
                 if (item.getAttribute('data-module') === moduleId) item.classList.add('active');
             });
             
-            resetModule(moduleId);
+            if (moduleId !== 'perfil') {
+                resetModule(moduleId);
+            }
             
             if (moduleId === 'dashboard' && ingresosChart) ingresosChart.resize();
         }
@@ -1902,9 +2125,34 @@
                 if (!icon.contains(e.target) && !dropdown.contains(e.target)) dropdown.classList.remove('show');
             });
             dropdown.addEventListener('click', e=>e.stopPropagation());
+
+            const perfilLink = document.getElementById('perfilLink');
+            perfilLink.addEventListener('click', (e) => {
+                e.preventDefault();
+                dropdown.classList.remove('show');
+                changeModule('perfil');
+            });
+
+            const cerrarLink = document.getElementById('cerrarSesionLink');
+            cerrarLink.addEventListener('click', (e) => {
+                e.preventDefault();
+                dropdown.classList.remove('show');
+                document.getElementById('confirmModal').classList.add('active');
+            });
         }
 
-        // ---------- GRÁFICO ----------
+        window.togglePassword = function(inputId, btn) {
+            const input = document.getElementById(inputId);
+            const icon = btn.querySelector('i');
+            if (input.type === 'password') {
+                input.type = 'text';
+                icon.className = 'fas fa-eye-slash';
+            } else {
+                input.type = 'password';
+                icon.className = 'fas fa-eye';
+            }
+        };
+
         function initChart() {
             const ctx = document.getElementById('ingresosChart').getContext('2d');
             const dataDay = {
@@ -1976,17 +2224,19 @@
                 document.getElementById('direccionEmpresa').value = 'Av. Principal, Caracas';
                 document.getElementById('estadoEmpresaSelect').value = 'Activo';
                 
-                // Preseleccionar clientes asociados
-                const selectClientes = document.getElementById('clientesAsociadosEmpresa');
-                Array.from(selectClientes.options).forEach(opt => {
-                    if (opt.value === 'Sambil Chacao' || opt.value === 'Empresas Polar') {
-                        opt.selected = true;
-                    } else {
-                        opt.selected = false;
-                    }
+                document.getElementById('clientesAsociadosSection').style.display = 'block';
+                const clientes = ['Empresas Polar', 'Sambil Chacao'];
+                const lista = document.getElementById('clientesAsociadosLista');
+                let html = '<ul>';
+                clientes.forEach(cliente => {
+                    html += `<li>${cliente}</li>`;
                 });
+                html += '</ul>';
+                html += `<div class="total">Total: ${clientes.length} clientes</div>`;
+                lista.innerHTML = html;
                 
                 document.getElementById('btnGuardarEmpresa').innerHTML = '<i class="fas fa-save"></i> Actualizar';
+                document.getElementById('empresasHeaderButtons').style.display = 'none';
                 document.getElementById('tablaEmpresasContainer').style.display = 'none';
                 document.getElementById('formularioEmpresaContainer').style.display = 'block';
             } else {
@@ -2037,7 +2287,9 @@
                 document.getElementById('repDocumentoCliente').value = '12345678';
                 document.getElementById('repTelefonoCliente').value = '04121234567';
                 document.getElementById('repCorreoCliente').value = 'juan.perez@sambilchacao.com';
+                
                 document.getElementById('btnGuardarCliente').innerHTML = '<i class="fas fa-save"></i> Actualizar';
+                document.getElementById('clientesHeaderButtons').style.display = 'none';
                 document.getElementById('tablaClientesContainer').style.display = 'none';
                 document.getElementById('formularioClienteContainer').style.display = 'block';
             } else {
@@ -2083,7 +2335,13 @@
                 document.getElementById('usuarioSistemaEmpleado').value = 'mgonzalez';
                 document.getElementById('rolEmpleado').value = 'Administrador';
                 document.getElementById('estadoEmpleado').value = 'Activo';
+                
+                document.getElementById('passwordFieldsContainer').style.display = 'grid';
+                document.getElementById('passwordEmpleado').value = '';
+                document.getElementById('confirmPasswordEmpleado').value = '';
+                
                 document.getElementById('btnGuardarEmpleado').innerHTML = '<i class="fas fa-save"></i> Actualizar';
+                document.getElementById('empleadosHeaderButtons').style.display = 'none';
                 document.getElementById('tablaEmpleadosContainer').style.display = 'none';
                 document.getElementById('formularioEmpleadoContainer').style.display = 'block';
             } else {
@@ -2118,21 +2376,31 @@
         };
 
         // ---------- DISPOSITIVOS ----------
-        window.editarDispositivo = function(cliente) {
-            if (cliente === 'Sambil Chacao') {
-                document.getElementById('clienteDispositivo').value = 'Sambil Chacao';
-                document.getElementById('empresaDispositivo').value = 'Hidrocapital';
-                document.getElementById('medidoresDispositivo').value = 32;
-                document.getElementById('sensoresDispositivo').value = 8;
-                document.getElementById('telemetriaDispositivo').value = 4;
-                document.getElementById('totalDispositivo').value = 44;
-                document.getElementById('estadoDispositivo').value = '96% Operativo';
-                document.getElementById('ultimoMantenimientoDispositivo').value = '15/01/2026';
+        window.verDetalleDispositivo = function(codigo) {
+            alert(`Detalles del dispositivo ${codigo}\nModelo: TPV-2000\nFirmware: v2.3.1\nÚltima conexión: 10/02/2026`);
+        };
+
+        window.mostrarOTP = function(serial, codigoOtp) {
+            document.getElementById('otpSerial').textContent = serial;
+            document.getElementById('otpCodigo').textContent = codigoOtp;
+            document.getElementById('otpModal').classList.add('active');
+        };
+
+        window.editarDispositivo = function(codigo) {
+            if (codigo === 'TERM-001') {
+                document.getElementById('codigoDispositivo').value = 'TERM-001';
+                document.getElementById('serialDispositivo').value = 'SN12345678';
+                document.getElementById('modeloDispositivo').value = 'TPV-2000';
+                document.getElementById('ipDispositivo').value = '192.168.1.100';
+                document.getElementById('tipoDispositivo').value = 'Punto de venta';
+                document.getElementById('estadoDispositivoForm').value = 'Activo';
+                
                 document.getElementById('btnGuardarDispositivo').innerHTML = '<i class="fas fa-save"></i> Actualizar';
+                document.getElementById('dispositivosHeaderButtons').style.display = 'none';
                 document.getElementById('tablaDispositivosContainer').style.display = 'none';
                 document.getElementById('formularioDispositivoContainer').style.display = 'block';
             } else {
-                alert('Ver detalles de ' + cliente);
+                alert('Ver detalles de ' + codigo);
             }
         };
 
@@ -2161,6 +2429,43 @@
                 if (pagButtons[pagina-1]) pagButtons[pagina-1].classList.add('active');
             }
         };
+
+        // ---------- MODALES ----------
+        function initModal() {
+            const modal = document.getElementById('confirmModal');
+            const closeBtn = document.getElementById('modalCloseBtn');
+            const cancelBtn = document.getElementById('modalCancelBtn');
+            const confirmBtn = document.getElementById('modalConfirmBtn');
+
+            const closeModal = () => modal.classList.remove('active');
+
+            if (closeBtn) closeBtn.addEventListener('click', closeModal);
+            if (cancelBtn) cancelBtn.addEventListener('click', closeModal);
+            if (confirmBtn) confirmBtn.addEventListener('click', function() {
+                closeModal();
+                alert('Sesión cerrada (simulación)');
+            });
+            modal.addEventListener('click', function(e) {
+                if (e.target === modal) closeModal();
+            });
+        }
+
+        function initOtpModal() {
+            const modal = document.getElementById('otpModal');
+            const closeBtn = document.getElementById('otpModalClose');
+            const nuevoBtn = document.getElementById('otpNuevoBtn');
+
+            const closeModal = () => modal.classList.remove('active');
+
+            if (closeBtn) closeBtn.addEventListener('click', closeModal);
+            if (nuevoBtn) nuevoBtn.addEventListener('click', function() {
+                const nuevoOtp = Math.floor(100000 + Math.random() * 900000).toString();
+                document.getElementById('otpCodigo').textContent = nuevoOtp;
+            });
+            modal.addEventListener('click', function(e) {
+                if (e.target === modal) closeModal();
+            });
+        }
 
         // ---------- INICIALIZACIÓN DE EVENTOS ----------
         document.addEventListener('DOMContentLoaded', function() {
@@ -2196,8 +2501,10 @@
             initDarkMode();
             initProfileDropdown();
             initChart();
+            initModal();
+            initOtpModal();
 
-            // ---------- EMPRESAS ----------
+            // ---------- EMPRESAS (eventos) ----------
             const btnFiltroEmp = document.getElementById('btnFiltroEmpresas');
             const buscadorEmp = document.getElementById('buscadorEmpresas');
             if (btnFiltroEmp) {
@@ -2241,10 +2548,9 @@
             if (btnCrearEmp) {
                 btnCrearEmp.addEventListener('click', function() {
                     document.getElementById('empresaForm').reset();
-                    // Limpiar selección de clientes
-                    const selectClientes = document.getElementById('clientesAsociadosEmpresa');
-                    Array.from(selectClientes.options).forEach(opt => opt.selected = false);
+                    document.getElementById('clientesAsociadosSection').style.display = 'none';
                     document.getElementById('btnGuardarEmpresa').innerHTML = '<i class="fas fa-save"></i> Crear';
+                    document.getElementById('empresasHeaderButtons').style.display = 'none';
                     tablaEmpContainer.style.display = 'none';
                     formEmpContainer.style.display = 'block';
                 });
@@ -2254,6 +2560,7 @@
                 btnRegresarEmp.addEventListener('click', function() {
                     formEmpContainer.style.display = 'none';
                     tablaEmpContainer.style.display = 'block';
+                    document.getElementById('empresasHeaderButtons').style.display = 'flex';
                     if (searchInputEmp) {
                         searchInputEmp.value = '';
                         searchInputEmp.dispatchEvent(new Event('keyup'));
@@ -2267,6 +2574,7 @@
                     alert('Empresa guardada (simulación)');
                     formEmpContainer.style.display = 'none';
                     tablaEmpContainer.style.display = 'block';
+                    document.getElementById('empresasHeaderButtons').style.display = 'flex';
                     if (searchInputEmp) {
                         searchInputEmp.value = '';
                         searchInputEmp.dispatchEvent(new Event('keyup'));
@@ -2274,7 +2582,7 @@
                 });
             }
 
-            // ---------- CLIENTES ----------
+            // ---------- CLIENTES (eventos) ----------
             const btnFiltroCli = document.getElementById('btnFiltroClientes');
             const buscadorCli = document.getElementById('buscadorClientes');
             if (btnFiltroCli) {
@@ -2319,8 +2627,23 @@
             const formCliContainer = document.getElementById('formularioClienteContainer');
             if (btnCrearCli) {
                 btnCrearCli.addEventListener('click', function() {
-                    document.getElementById('clienteForm').reset();
+                    document.getElementById('nombreCliente').value = '';
+                    document.getElementById('razonSocialCliente').value = '';
+                    document.getElementById('tipoDocumentoCliente').value = 'J';
+                    document.getElementById('numeroDocumentoCliente').value = '';
+                    document.getElementById('correoCliente').value = '';
+                    document.getElementById('empresaCliente').value = 'Hidrocapital';
+                    document.getElementById('estadoClienteDir').value = '';
+                    document.getElementById('municipioCliente').value = '';
+                    document.getElementById('direccionCliente').value = '';
+                    document.getElementById('repNombreCliente').value = '';
+                    document.getElementById('repTipoDocumentoCliente').value = 'V';
+                    document.getElementById('repDocumentoCliente').value = '';
+                    document.getElementById('repTelefonoCliente').value = '';
+                    document.getElementById('repCorreoCliente').value = '';
+                    
                     document.getElementById('btnGuardarCliente').innerHTML = '<i class="fas fa-save"></i> Guardar';
+                    document.getElementById('clientesHeaderButtons').style.display = 'none';
                     tablaCliContainer.style.display = 'none';
                     formCliContainer.style.display = 'block';
                 });
@@ -2330,19 +2653,21 @@
                 btnRegresarCli.addEventListener('click', function() {
                     formCliContainer.style.display = 'none';
                     tablaCliContainer.style.display = 'block';
+                    document.getElementById('clientesHeaderButtons').style.display = 'flex';
                     if (searchInputCli) {
                         searchInputCli.value = '';
                         searchInputCli.dispatchEvent(new Event('keyup'));
                     }
                 });
             }
-            const formCli = document.getElementById('clienteForm');
-            if (formCli) {
-                formCli.addEventListener('submit', function(e) {
+            const btnGuardarCli = document.getElementById('btnGuardarCliente');
+            if (btnGuardarCli) {
+                btnGuardarCli.addEventListener('click', function(e) {
                     e.preventDefault();
                     alert('Cliente guardado (simulación)');
                     formCliContainer.style.display = 'none';
                     tablaCliContainer.style.display = 'block';
+                    document.getElementById('clientesHeaderButtons').style.display = 'flex';
                     if (searchInputCli) {
                         searchInputCli.value = '';
                         searchInputCli.dispatchEvent(new Event('keyup'));
@@ -2350,7 +2675,7 @@
                 });
             }
 
-            // ---------- EMPLEADOS ----------
+            // ---------- EMPLEADOS (eventos) ----------
             const btnFiltroEmpld = document.getElementById('btnFiltroEmpleados');
             const buscadorEmpld = document.getElementById('buscadorEmpleados');
             if (btnFiltroEmpld) {
@@ -2396,7 +2721,14 @@
             if (btnCrearEmpld) {
                 btnCrearEmpld.addEventListener('click', function() {
                     document.getElementById('empleadoForm').reset();
+                    document.getElementById('usuarioSistemaEmpleado').value = '';
+                    document.getElementById('rolEmpleado').value = 'Administrador';
+                    document.getElementById('estadoEmpleado').value = 'Activo';
+                    
+                    document.getElementById('passwordFieldsContainer').style.display = 'none';
+                    
                     document.getElementById('btnGuardarEmpleado').innerHTML = '<i class="fas fa-save"></i> Guardar';
+                    document.getElementById('empleadosHeaderButtons').style.display = 'none';
                     tablaEmpldContainer.style.display = 'none';
                     formEmpldContainer.style.display = 'block';
                 });
@@ -2406,6 +2738,7 @@
                 btnRegresarEmpld.addEventListener('click', function() {
                     formEmpldContainer.style.display = 'none';
                     tablaEmpldContainer.style.display = 'block';
+                    document.getElementById('empleadosHeaderButtons').style.display = 'flex';
                     if (searchInputEmpld) {
                         searchInputEmpld.value = '';
                         searchInputEmpld.dispatchEvent(new Event('keyup'));
@@ -2419,6 +2752,7 @@
                     alert('Empleado guardado (simulación)');
                     formEmpldContainer.style.display = 'none';
                     tablaEmpldContainer.style.display = 'block';
+                    document.getElementById('empleadosHeaderButtons').style.display = 'flex';
                     if (searchInputEmpld) {
                         searchInputEmpld.value = '';
                         searchInputEmpld.dispatchEvent(new Event('keyup'));
@@ -2426,7 +2760,7 @@
                 });
             }
 
-            // ---------- DISPOSITIVOS ----------
+            // ---------- DISPOSITIVOS (eventos) ----------
             const btnFiltroDis = document.getElementById('btnFiltroDispositivos');
             const buscadorDis = document.getElementById('buscadorDispositivos');
             if (btnFiltroDis) {
@@ -2441,12 +2775,14 @@
                     const table = document.getElementById('tablaDispositivos');
                     const rows = table.getElementsByTagName('tr');
                     for (let i = 1; i < rows.length; i++) {
-                        const clienteCell = rows[i].getElementsByTagName('td')[0];
-                        const empresaCell = rows[i].getElementsByTagName('td')[1];
-                        if (clienteCell && empresaCell) {
-                            const cliente = clienteCell.textContent || clienteCell.innerText;
-                            const empresa = empresaCell.textContent || empresaCell.innerText;
-                            if (cliente.toLowerCase().indexOf(filter) > -1 || empresa.toLowerCase().indexOf(filter) > -1) {
+                        const codigoCell = rows[i].getElementsByTagName('td')[0];
+                        const serialCell = rows[i].getElementsByTagName('td')[1];
+                        const tipoCell = rows[i].getElementsByTagName('td')[2];
+                        if (codigoCell && serialCell && tipoCell) {
+                            const codigo = codigoCell.textContent || codigoCell.innerText;
+                            const serial = serialCell.textContent || serialCell.innerText;
+                            const tipo = tipoCell.textContent || tipoCell.innerText;
+                            if (codigo.toLowerCase().indexOf(filter) > -1 || serial.toLowerCase().indexOf(filter) > -1 || tipo.toLowerCase().indexOf(filter) > -1) {
                                 rows[i].style.display = '';
                             } else {
                                 rows[i].style.display = 'none';
@@ -2470,7 +2806,9 @@
             if (btnCrearDis) {
                 btnCrearDis.addEventListener('click', function() {
                     document.getElementById('dispositivoForm').reset();
+                    document.getElementById('tipoDispositivo').value = 'Punto de venta';
                     document.getElementById('btnGuardarDispositivo').innerHTML = '<i class="fas fa-save"></i> Guardar';
+                    document.getElementById('dispositivosHeaderButtons').style.display = 'none';
                     tablaDisContainer.style.display = 'none';
                     formDisContainer.style.display = 'block';
                 });
@@ -2480,6 +2818,7 @@
                 btnRegresarDis.addEventListener('click', function() {
                     formDisContainer.style.display = 'none';
                     tablaDisContainer.style.display = 'block';
+                    document.getElementById('dispositivosHeaderButtons').style.display = 'flex';
                     if (searchInputDis) {
                         searchInputDis.value = '';
                         searchInputDis.dispatchEvent(new Event('keyup'));
@@ -2488,28 +2827,42 @@
             }
             const formDis = document.getElementById('dispositivoForm');
             if (formDis) {
-                const medidores = document.getElementById('medidoresDispositivo');
-                const sensores = document.getElementById('sensoresDispositivo');
-                const telemetria = document.getElementById('telemetriaDispositivo');
-                const total = document.getElementById('totalDispositivo');
-                const calcularTotal = () => {
-                    const m = parseInt(medidores.value) || 0;
-                    const s = parseInt(sensores.value) || 0;
-                    const t = parseInt(telemetria.value) || 0;
-                    total.value = m + s + t;
-                };
-                medidores.addEventListener('input', calcularTotal);
-                sensores.addEventListener('input', calcularTotal);
-                telemetria.addEventListener('input', calcularTotal);
-                
                 formDis.addEventListener('submit', function(e) {
                     e.preventDefault();
                     alert('Dispositivo guardado (simulación)');
                     formDisContainer.style.display = 'none';
                     tablaDisContainer.style.display = 'block';
+                    document.getElementById('dispositivosHeaderButtons').style.display = 'flex';
                     if (searchInputDis) {
                         searchInputDis.value = '';
                         searchInputDis.dispatchEvent(new Event('keyup'));
+                    }
+                });
+            }
+
+            // ---------- PERFIL ----------
+            const btnRegresarPerfil = document.getElementById('btnRegresarPerfil');
+            if (btnRegresarPerfil) {
+                btnRegresarPerfil.addEventListener('click', function() {
+                    changeModule('dashboard');
+                });
+            }
+
+            const btnActualizarPerfil = document.getElementById('btnActualizarPerfil');
+            if (btnActualizarPerfil) {
+                btnActualizarPerfil.addEventListener('click', function() {
+                    const nuevaPass = document.getElementById('perfilNuevaPassword').value;
+                    const confirmPass = document.getElementById('perfilConfirmPassword').value;
+                    if (nuevaPass || confirmPass) {
+                        if (nuevaPass !== confirmPass) {
+                            alert('Las contraseñas no coinciden');
+                            return;
+                        }
+                        alert('Contraseña actualizada (simulación)');
+                        document.getElementById('perfilNuevaPassword').value = '';
+                        document.getElementById('perfilConfirmPassword').value = '';
+                    } else {
+                        alert('No hay cambios para guardar');
                     }
                 });
             }
